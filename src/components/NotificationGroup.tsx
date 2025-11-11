@@ -46,6 +46,19 @@ export const NotificationGroup = ({
     setShowUndo(true);
   };
 
+  const handleMarkAllAsUnread = () => {
+    // Mark all seen notifications as unread
+    const notificationsToMark = isExpanded ? notifications : notifications.slice(0, 3);
+    
+    notificationsToMark.forEach((notification) => {
+      if (notification.status === "read") {
+        onMarkAsUnread(notification.id);
+      }
+    });
+    
+    setShowUndo(true);
+  };
+
   useEffect(() => {
     if (showUndo) {
       const timer = setTimeout(() => {
@@ -118,6 +131,31 @@ export const NotificationGroup = ({
                 title={isExpanded ? "Mark all as read" : "Mark top 3 as read"}
               >
                 <Check className="h-4 w-4" />
+              </Button>
+            </div>
+          )}
+
+          {isSeenGroup && notifications.length > 0 && (
+            <div className="flex items-center gap-1">
+              {showUndo && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleUndo}
+                  className="h-7 text-xs gap-1"
+                >
+                  <Undo2 className="h-3 w-3" />
+                  Undo
+                </Button>
+              )}
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleMarkAllAsUnread}
+                className="h-7 text-xs hover:bg-primary/10"
+                title={isExpanded ? "Mark all as unread" : "Mark top 3 as unread"}
+              >
+                Mark all as unread
               </Button>
             </div>
           )}
