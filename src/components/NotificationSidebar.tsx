@@ -53,10 +53,15 @@ export const NotificationSidebar = ({
       Mentions: [],
       "Assigned to Me": [],
       "Task Updates": [],
+      Seen: [],
     };
 
     filteredNotifications.forEach((notification) => {
-      groups[notification.group].push(notification);
+      if (notification.status === "read") {
+        groups.Seen.push(notification);
+      } else {
+        groups[notification.group].push(notification);
+      }
     });
 
     return groups;
@@ -120,7 +125,9 @@ export const NotificationSidebar = ({
 
         {/* Notification Groups */}
         <div className="flex-1 overflow-y-auto">
-          {Object.entries(groupedNotifications).map(([groupName, groupNotifications]) => {
+          {/* Show unread groups first */}
+          {["Mentions", "Assigned to Me", "Task Updates"].map((groupName) => {
+            const groupNotifications = groupedNotifications[groupName];
             const unreadCount = groupNotifications.filter(n => n.status === "unread").length;
             
             if (groupNotifications.length === 0) return null;
@@ -138,6 +145,20 @@ export const NotificationSidebar = ({
               />
             );
           })}
+          
+          {/* Show Seen group at the bottom */}
+          {groupedNotifications.Seen.length > 0 && (
+            <NotificationGroup
+              key="Seen"
+              groupName="Seen"
+              notifications={groupedNotifications.Seen}
+              unreadCount={0}
+              onMarkAsRead={onMarkAsRead}
+              onMarkAsUnread={onMarkAsUnread}
+              onMarkGroupAsRead={onMarkGroupAsRead}
+              onUndoGroupRead={onUndoGroupRead}
+            />
+          )}
         </div>
       </div>
     </>

@@ -49,26 +49,40 @@ export const NotificationGroup = ({
     setShowUndo(false);
   };
 
+  // For "Seen" group, don't show the mark as read button
+  const isSeenGroup = groupName === "Seen";
+
   return (
     <div className="border-b last:border-b-0">
       <div className="px-4 py-3 bg-muted/30">
-        <div className="flex items-center justify-between">
-          <button
-            onClick={handleMarkAllAsRead}
-            className="text-sm font-medium hover:text-primary transition-colors flex items-center gap-2"
-          >
-            {groupName} ({unreadCount})
-          </button>
-          {showUndo && (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={handleUndo}
-              className="h-7 text-xs gap-1"
-            >
-              <Undo2 className="h-3 w-3" />
-              Undo
-            </Button>
+        <div className="flex items-center justify-between gap-2">
+          <span className="text-sm font-medium">
+            {groupName} ({notifications.length})
+          </span>
+          
+          {!isSeenGroup && unreadCount > 0 && (
+            <div className="flex items-center gap-2">
+              {showUndo ? (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleUndo}
+                  className="h-7 text-xs gap-1"
+                >
+                  <Undo2 className="h-3 w-3" />
+                  Undo
+                </Button>
+              ) : (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleMarkAllAsRead}
+                  className="h-7 text-xs hover:bg-primary/10"
+                >
+                  Top {unreadCount} unread notifications
+                </Button>
+              )}
+            </div>
           )}
         </div>
       </div>
@@ -92,7 +106,7 @@ export const NotificationGroup = ({
             onClick={() => setIsExpanded(!isExpanded)}
             className="w-full text-primary hover:text-primary"
           >
-            {isExpanded ? "Show Less" : `Show All →`}
+            {isExpanded ? "Show Less" : `See All →`}
           </Button>
         </div>
       )}
