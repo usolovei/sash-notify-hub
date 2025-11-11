@@ -1,0 +1,130 @@
+import { useState, useEffect } from "react";
+import { Circle, CheckCircle2, Undo2, CheckSquare, Users, Headphones, Book } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Notification } from "@/data/notifications";
+import { cn } from "@/lib/utils";
+
+interface NotificationItemProps {
+  notification: Notification;
+  onMarkAsRead: (id: number) => void;
+  onMarkAsUnread: (id: number) => void;
+}
+
+const moduleIcons = {
+  Tasks: CheckSquare,
+  "CRM Requests": Users,
+  "Care Service": Headphones,
+  "Knowledge Base": Book,
+};
+
+export const NotificationItem = ({
+  notification,
+  onMarkAsRead,
+  onMarkAsUnread,
+}: NotificationItemProps) => {
+  const [showUndo, setShowUndo] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
+
+  const isUnread = notification.status === "unread";
+  const ModuleIcon = moduleIcons[notification.module];
+
+  const handleMarkAsRead = () => {
+    onMarkAsRead(notification.id);
+    setShowUndo(true);
+  };
+
+  useEffect(() => {
+    if (showUndo) {
+      const timer = setTimeout(() => {
+        setShowUndo(false);
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [showUndo]);
+
+  const handleUndo = () => {
+    onMarkAsUnread(notification.id);
+    setShowUndo(false);
+  };
+
+  const getInitials = (name: string) => {
+    return name
+      .split(" ")
+      .map((n) => n[0])
+      .join("")
+      .toUpperCase()
+      .slice(0, 2);
+  };
+
+  return (
+    <div
+      className={cn(
+        "px-4 py-3 flex items-start gap-3 transition-colors relative group",
+        isUnread ? "bg-notification-unread" : "bg-background hover:bg-muted/30"
+      )}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
+      {/* Unread Indicator */}
+      {isUnread && (
+        <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-notification-indicator rounded-r" />
+      )}
+
+      {/* Avatar with Module Icon */}
+      <div className="relative flex-shrink-0">
+        <Avatar className="h-9 w-9">
+          <AvatarFallback className="bg-primary/10 text-primary text-xs font-medium">
+            {getInitials(notification.name)}
+          </AvatarFallback>
+        </Avatar>
+        {ModuleIcon && (
+          <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-background border-2 border-background flex items-center justify-center">
+            <ModuleIcon className="h-3 w-3 text-muted-foreground" />
+          </div>
+        )}
+      </div>
+
+      {/* Content */}
+      <div className="flex-1 min-w-0">
+        <div className="flex items-start justify-between gap-2">
+          <div className="flex-1 min-w-0">
+            <p className="text-sm">
+              <span className="font-medium">{notification.name}</span>{" "}
+              <span className="text-muted-foreground">{notification.description}</span>
+            </p>
+            <p className="text-xs text-muted-foreground mt-1">{notification.timestamp}</p>
+          </div>
+
+          {/* Action Buttons */}
+          {isUnread && (
+            <div className="flex-shrink-0">
+              {showUndo ? (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleUndo}
+                  className="h-7 text-xs gap-1"
+                >
+                  <Undo2 className="h-3 w-3" />
+                  Undo
+                </Button>
+              ) : (
+                isHovered && (
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={handleMarkAsRead}
+                    className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity"
+                  >
+                    <Circle className="h-4 w-4 text-muted-foreground" />
+                  </Button>
+                )
+              )}
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};

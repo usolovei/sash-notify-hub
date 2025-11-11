@@ -47,6 +47,14 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        notification: {
+          unread: "hsl(var(--notification-unread-bg))",
+          indicator: "hsl(var(--notification-unread-indicator))",
+        },
+        badge: {
+          DEFAULT: "hsl(var(--badge-bg))",
+          foreground: "hsl(var(--badge-foreground))",
+        },
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
           foreground: "hsl(var(--sidebar-foreground))",
