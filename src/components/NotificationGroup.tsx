@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { NotificationItem } from "./NotificationItem";
 import { Notification } from "@/data/notifications";
-import { Undo2 } from "lucide-react";
+import { Undo2, Check } from "lucide-react";
 
 interface NotificationGroupProps {
   groupName: string;
@@ -30,8 +30,17 @@ export const NotificationGroup = ({
     ? notifications
     : notifications.slice(0, 3);
 
-  const handleMarkAllAsRead = () => {
-    onMarkGroupAsRead(groupName);
+  const handleMarkAsRead = () => {
+    // If expanded, mark all notifications as read
+    // If collapsed, mark only top 3 as read
+    const notificationsToMark = isExpanded ? notifications : notifications.slice(0, 3);
+    
+    notificationsToMark.forEach((notification) => {
+      if (notification.status === "unread") {
+        onMarkAsRead(notification.id);
+      }
+    });
+    
     setShowUndo(true);
   };
 
@@ -61,8 +70,8 @@ export const NotificationGroup = ({
           </span>
           
           {!isSeenGroup && unreadCount > 0 && (
-            <div className="flex items-center gap-2">
-              {showUndo ? (
+            <div className="flex items-center gap-1">
+              {showUndo && (
                 <Button
                   variant="ghost"
                   size="sm"
@@ -72,16 +81,16 @@ export const NotificationGroup = ({
                   <Undo2 className="h-3 w-3" />
                   Undo
                 </Button>
-              ) : (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={handleMarkAllAsRead}
-                  className="h-7 text-xs hover:bg-primary/10"
-                >
-                  Top {unreadCount} unread notifications
-                </Button>
               )}
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={handleMarkAsRead}
+                className="h-7 w-7 hover:bg-primary/10"
+                title={isExpanded ? "Mark all as read" : "Mark top 3 as read"}
+              >
+                <Check className="h-4 w-4" />
+              </Button>
             </div>
           )}
         </div>

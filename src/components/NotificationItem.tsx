@@ -97,32 +97,49 @@ export const NotificationItem = ({
           </div>
 
           {/* Action Buttons */}
-          {isUnread && (
-            <div className="flex-shrink-0">
-              {showUndo ? (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={handleUndo}
-                  className="h-7 text-xs gap-1"
-                >
-                  <Undo2 className="h-3 w-3" />
-                  Undo
-                </Button>
-              ) : (
-                isHovered && (
+          <div className="flex-shrink-0">
+            {isUnread ? (
+              // Unread notification: show mark as read button
+              <>
+                {showUndo ? (
                   <Button
                     variant="ghost"
-                    size="icon"
-                    onClick={handleMarkAsRead}
-                    className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity"
+                    size="sm"
+                    onClick={handleUndo}
+                    className="h-7 text-xs gap-1"
                   >
-                    <Circle className="h-4 w-4 text-muted-foreground" />
+                    <Undo2 className="h-3 w-3" />
+                    Undo
                   </Button>
-                )
-              )}
-            </div>
-          )}
+                ) : (
+                  isHovered && (
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={handleMarkAsRead}
+                      className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity"
+                      title="Mark as read"
+                    >
+                      <Circle className="h-4 w-4 text-muted-foreground" />
+                    </Button>
+                  )
+                )}
+              </>
+            ) : (
+              // Read notification: show mark as unread button
+              isHovered && (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => onMarkAsUnread(notification.id)}
+                  className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity"
+                  title="Mark as unread"
+                >
+                  <CheckCircle2 className="h-4 w-4 text-muted-foreground" />
+                </Button>
+              )
+            )}
+          </div>
         </div>
       </div>
     </div>
