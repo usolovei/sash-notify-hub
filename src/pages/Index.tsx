@@ -1,12 +1,15 @@
 import { useState, useMemo } from "react";
 import { AppHeader } from "@/components/AppHeader";
 import { NotificationSidebar } from "@/components/NotificationSidebar";
+import { NotificationDetail } from "@/components/NotificationDetail";
 import { notificationsData, Notification } from "@/data/notifications";
 
 const Index = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [notifications, setNotifications] = useState<Notification[]>(notificationsData);
   const [groupReadHistory, setGroupReadHistory] = useState<Map<string, Notification[]>>(new Map());
+  const [selectedNotification, setSelectedNotification] = useState<Notification | null>(null);
+  const [isDetailOpen, setIsDetailOpen] = useState(false);
 
   const unreadCount = useMemo(() => {
     return notifications.filter((n) => n.status === "unread").length;
@@ -69,6 +72,25 @@ const Index = () => {
     });
   };
 
+  const handleNotificationClick = (notification: Notification) => {
+    setSelectedNotification(notification);
+    setIsDetailOpen(true);
+
+    // Mark as viewed and move to Unanswered if it's a Mention
+    setNotifications((prev) =>
+      prev.map((n) =>
+        n.id === notification.id
+          ? {
+              ...n,
+              viewed: true,
+              originalGroup: n.group === "Mentions" ? "Mentions" : n.originalGroup,
+              group: n.group === "Mentions" && n.status === "unread" ? "Unanswered" : n.group,
+            }
+          : n
+      )
+    );
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <AppHeader
@@ -109,6 +131,13 @@ const Index = () => {
         onMarkAsUnread={handleMarkAsUnread}
         onMarkGroupAsRead={handleMarkGroupAsRead}
         onUndoGroupRead={handleUndoGroupRead}
+        onNotificationClick={handleNotificationClick}
+      />
+
+      <NotificationDetail
+        notification={selectedNotification}
+        isOpen={isDetailOpen}
+        onClose={() => setIsDetailOpen(false)}
       />
     </div>
   );

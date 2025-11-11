@@ -12,6 +12,7 @@ interface NotificationGroupProps {
   onMarkAsUnread: (id: number) => void;
   onMarkGroupAsRead: (group: string) => void;
   onUndoGroupRead: (group: string) => void;
+  onNotificationClick: (notification: Notification) => void;
 }
 
 export const NotificationGroup = ({
@@ -22,6 +23,7 @@ export const NotificationGroup = ({
   onMarkAsUnread,
   onMarkGroupAsRead,
   onUndoGroupRead,
+  onNotificationClick,
 }: NotificationGroupProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [showUndo, setShowUndo] = useState(false);
@@ -103,6 +105,7 @@ export const NotificationGroup = ({
             notification={notification}
             onMarkAsRead={onMarkAsRead}
             onMarkAsUnread={onMarkAsUnread}
+            onNotificationClick={onNotificationClick}
           />
         ))}
       </div>

@@ -20,6 +20,7 @@ interface NotificationSidebarProps {
   onMarkAsUnread: (id: number) => void;
   onMarkGroupAsRead: (group: string) => void;
   onUndoGroupRead: (group: string) => void;
+  onNotificationClick: (notification: Notification) => void;
 }
 
 export const NotificationSidebar = ({
@@ -30,6 +31,7 @@ export const NotificationSidebar = ({
   onMarkAsUnread,
   onMarkGroupAsRead,
   onUndoGroupRead,
+  onNotificationClick,
 }: NotificationSidebarProps) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [moduleFilter, setModuleFilter] = useState("All Modules");
@@ -53,12 +55,15 @@ export const NotificationSidebar = ({
       Mentions: [],
       "Assigned to Me": [],
       "Task Updates": [],
+      Unanswered: [],
       Seen: [],
     };
 
     filteredNotifications.forEach((notification) => {
       if (notification.status === "read") {
         groups.Seen.push(notification);
+      } else if (notification.group === "Unanswered" || (notification.originalGroup === "Mentions" && notification.viewed && notification.status === "unread")) {
+        groups.Unanswered.push(notification);
       } else {
         groups[notification.group].push(notification);
       }
@@ -126,7 +131,7 @@ export const NotificationSidebar = ({
         {/* Notification Groups */}
         <div className="flex-1 overflow-y-auto">
           {/* Show unread groups first */}
-          {["Mentions", "Assigned to Me", "Task Updates"].map((groupName) => {
+          {["Mentions", "Assigned to Me", "Task Updates", "Unanswered"].map((groupName) => {
             const groupNotifications = groupedNotifications[groupName];
             const unreadCount = groupNotifications.filter(n => n.status === "unread").length;
             
@@ -142,6 +147,7 @@ export const NotificationSidebar = ({
                 onMarkAsUnread={onMarkAsUnread}
                 onMarkGroupAsRead={onMarkGroupAsRead}
                 onUndoGroupRead={onUndoGroupRead}
+                onNotificationClick={onNotificationClick}
               />
             );
           })}
@@ -157,6 +163,7 @@ export const NotificationSidebar = ({
               onMarkAsUnread={onMarkAsUnread}
               onMarkGroupAsRead={onMarkGroupAsRead}
               onUndoGroupRead={onUndoGroupRead}
+              onNotificationClick={onNotificationClick}
             />
           )}
         </div>

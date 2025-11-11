@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { Circle, CheckCircle2, Undo2, CheckSquare, Users, Headphones, Book } from "lucide-react";
+import { useState } from "react";
+import { Circle, CheckCircle2, CheckSquare, Users, Headphones, Book } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Notification } from "@/data/notifications";
@@ -9,6 +9,7 @@ interface NotificationItemProps {
   notification: Notification;
   onMarkAsRead: (id: number) => void;
   onMarkAsUnread: (id: number) => void;
+  onNotificationClick: (notification: Notification) => void;
 }
 
 const moduleIcons = {
@@ -22,30 +23,29 @@ export const NotificationItem = ({
   notification,
   onMarkAsRead,
   onMarkAsUnread,
+  onNotificationClick,
 }: NotificationItemProps) => {
-  const [showUndo, setShowUndo] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
 
   const isUnread = notification.status === "unread";
   const ModuleIcon = moduleIcons[notification.module];
 
-  const handleMarkAsRead = () => {
+  const handleMarkAsRead = (e: React.MouseEvent) => {
+    e.stopPropagation();
     onMarkAsRead(notification.id);
-    setShowUndo(true);
   };
 
-  useEffect(() => {
-    if (showUndo) {
-      const timer = setTimeout(() => {
-        setShowUndo(false);
-      }, 5000);
-      return () => clearTimeout(timer);
-    }
-  }, [showUndo]);
-
-  const handleUndo = () => {
+  const handleMarkAsUnread = (e: React.MouseEvent) => {
+    e.stopPropagation();
     onMarkAsUnread(notification.id);
-    setShowUndo(false);
+  };
+
+  const handleClick = () => {
+    onNotificationClick(notification);
+    // Automatically mark as read when viewing
+    if (isUnread) {
+      onMarkAsRead(notification.id);
+    }
   };
 
   const getInitials = (name: string) => {
@@ -60,11 +60,12 @@ export const NotificationItem = ({
   return (
     <div
       className={cn(
-        "px-4 py-3 flex items-start gap-3 transition-colors relative group",
+        "px-4 py-3 flex items-start gap-3 transition-colors relative group cursor-pointer",
         isUnread ? "bg-notification-unread" : "bg-background hover:bg-muted/30"
       )}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
+      onClick={handleClick}
     >
       {/* Unread Indicator */}
       {isUnread && (
@@ -100,38 +101,24 @@ export const NotificationItem = ({
           <div className="flex-shrink-0">
             {isUnread ? (
               // Unread notification: show mark as read button
-              <>
-                {showUndo ? (
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={handleUndo}
-                    className="h-7 text-xs gap-1"
-                  >
-                    <Undo2 className="h-3 w-3" />
-                    Undo
-                  </Button>
-                ) : (
-                  isHovered && (
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={handleMarkAsRead}
-                      className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity"
-                      title="Mark as read"
-                    >
-                      <Circle className="h-4 w-4 text-muted-foreground" />
-                    </Button>
-                  )
-                )}
-              </>
+              isHovered && (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={handleMarkAsRead}
+                  className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity"
+                  title="Mark as read"
+                >
+                  <Circle className="h-4 w-4 text-muted-foreground" />
+                </Button>
+              )
             ) : (
               // Read notification: show mark as unread button
               isHovered && (
                 <Button
                   variant="ghost"
                   size="icon"
-                  onClick={() => onMarkAsUnread(notification.id)}
+                  onClick={handleMarkAsUnread}
                   className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity"
                   title="Mark as unread"
                 >
