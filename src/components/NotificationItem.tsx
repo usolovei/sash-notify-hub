@@ -42,8 +42,8 @@ export const NotificationItem = ({
 
   const handleClick = () => {
     onNotificationClick(notification);
-    // Automatically mark as read when viewing
-    if (isUnread) {
+    // Only auto-mark as read if NOT from Mentions group
+    if (isUnread && notification.group !== "Mentions" && notification.originalGroup !== "Mentions") {
       onMarkAsRead(notification.id);
     }
   };
