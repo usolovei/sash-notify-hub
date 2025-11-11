@@ -76,17 +76,30 @@ const Index = () => {
     setSelectedNotification(notification);
     setIsDetailOpen(true);
 
-    // Mark as viewed and move to Unanswered if it's a Mention
+    // If it's a Mention, move to Unanswered (stays unread)
+    if (notification.group === "Mentions" || notification.originalGroup === "Mentions") {
+      setNotifications((prev) =>
+        prev.map((n) =>
+          n.id === notification.id
+            ? {
+                ...n,
+                viewed: true,
+                originalGroup: "Mentions" as const,
+                group: "Unanswered" as const,
+              }
+            : n
+        )
+      );
+    }
+  };
+
+  const handleAnswer = (notificationId: number) => {
+    // Move to Seen (mark as read) when Answer button is clicked
     setNotifications((prev) =>
-      prev.map((n) =>
-        n.id === notification.id
-          ? {
-              ...n,
-              viewed: true,
-              originalGroup: n.group === "Mentions" ? "Mentions" : n.originalGroup,
-              group: n.group === "Mentions" && n.status === "unread" ? "Unanswered" : n.group,
-            }
-          : n
+      prev.map((notification) =>
+        notification.id === notificationId
+          ? { ...notification, status: "read" as const }
+          : notification
       )
     );
   };
@@ -138,6 +151,7 @@ const Index = () => {
         notification={selectedNotification}
         isOpen={isDetailOpen}
         onClose={() => setIsDetailOpen(false)}
+        onAnswer={handleAnswer}
       />
     </div>
   );

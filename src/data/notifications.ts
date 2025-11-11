@@ -11,6 +11,7 @@ export interface Notification {
 }
 
 export const notificationsData: Notification[] = [
+  // Mentions (5)
   {
     id: 1,
     group: "Mentions",
@@ -33,13 +34,33 @@ export const notificationsData: Notification[] = [
     id: 3,
     group: "Mentions",
     module: "Tasks",
-    status: "read",
-    name: "Alia Tarek",
-    description: "RE: Project Phoenix kickoff",
+    status: "unread",
+    name: "Sarah Connor",
+    description: "mentioned you in 'Marketing Campaign Review'",
     timestamp: "1h ago"
   },
   {
     id: 4,
+    group: "Mentions",
+    module: "Knowledge Base",
+    status: "unread",
+    name: "Mike Chen",
+    description: "tagged you in article 'API Documentation Updates'",
+    timestamp: "2h ago"
+  },
+  {
+    id: 5,
+    group: "Mentions",
+    module: "Care Service",
+    status: "unread",
+    name: "Emma Wilson",
+    description: "mentioned you in ticket discussion #445",
+    timestamp: "3h ago"
+  },
+  
+  // Assigned to Me (5)
+  {
+    id: 6,
     group: "Assigned to Me",
     module: "Tasks",
     status: "unread",
@@ -48,7 +69,7 @@ export const notificationsData: Notification[] = [
     timestamp: "22m ago"
   },
   {
-    id: 5,
+    id: 7,
     group: "Assigned to Me",
     module: "CRM Requests",
     status: "unread",
@@ -57,7 +78,7 @@ export const notificationsData: Notification[] = [
     timestamp: "45m ago"
   },
   {
-    id: 6,
+    id: 8,
     group: "Assigned to Me",
     module: "Care Service",
     status: "unread",
@@ -66,7 +87,7 @@ export const notificationsData: Notification[] = [
     timestamp: "1h ago"
   },
   {
-    id: 7,
+    id: 9,
     group: "Assigned to Me",
     module: "Tasks",
     status: "unread",
@@ -75,16 +96,18 @@ export const notificationsData: Notification[] = [
     timestamp: "2h ago"
   },
   {
-    id: 8,
+    id: 10,
     group: "Assigned to Me",
-    module: "Tasks",
-    status: "read",
-    name: "Project Bot",
-    description: "Task 'Review wireframes' assigned",
-    timestamp: "3h ago"
+    module: "CRM Requests",
+    status: "unread",
+    name: "Salesforce Sync",
+    description: "Lead 'Acme Corp' requires follow-up",
+    timestamp: "4h ago"
   },
+  
+  // Task Updates (5)
   {
-    id: 9,
+    id: 11,
     group: "Task Updates",
     module: "Tasks",
     status: "unread",
@@ -93,21 +116,59 @@ export const notificationsData: Notification[] = [
     timestamp: "5m ago"
   },
   {
-    id: 10,
+    id: 12,
     group: "Task Updates",
     module: "Knowledge Base",
     status: "unread",
     name: "Content Bot",
     description: "New article 'API V2 Guide' published",
-    timestamp: "2d ago"
+    timestamp: "30m ago"
   },
   {
-    id: 11,
+    id: 13,
+    group: "Task Updates",
+    module: "Tasks",
+    status: "unread",
+    name: "Lisa Anderson",
+    description: "updated status on 'Website Redesign'",
+    timestamp: "1h ago"
+  },
+  {
+    id: 14,
     group: "Task Updates",
     module: "Care Service",
-    status: "read",
+    status: "unread",
     name: "Jane Doe",
     description: "commented on Ticket #880-C",
-    timestamp: "3d ago"
-  }
+    timestamp: "2h ago"
+  },
+  {
+    id: 15,
+    group: "Task Updates",
+    module: "Tasks",
+    status: "unread",
+    name: "Tom Bradley",
+    description: "moved 'Sprint Planning' to In Progress",
+    timestamp: "5h ago"
+  },
+  
+  // Some already read (for Seen group)
+  {
+    id: 16,
+    group: "Task Updates",
+    module: "Tasks",
+    status: "read",
+    name: "Alex Murphy",
+    description: "completed 'Database Migration'",
+    timestamp: "1d ago"
+  },
+  {
+    id: 17,
+    group: "Assigned to Me",
+    module: "Tasks",
+    status: "read",
+    name: "Project Bot",
+    description: "Task 'Review wireframes' assigned",
+    timestamp: "1d ago"
+  },
 ];

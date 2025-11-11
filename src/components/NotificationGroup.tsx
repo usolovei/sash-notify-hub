@@ -60,8 +60,9 @@ export const NotificationGroup = ({
     setShowUndo(false);
   };
 
-  // For "Seen" group, don't show the mark as read button
+  // For "Seen" group, show mark all as read button instead
   const isSeenGroup = groupName === "Seen";
+  const isUnansweredGroup = groupName === "Unanswered";
 
   return (
     <div className="border-b last:border-b-0">
@@ -71,7 +72,32 @@ export const NotificationGroup = ({
             {groupName} ({notifications.length})
           </span>
           
-          {!isSeenGroup && unreadCount > 0 && (
+          {!isSeenGroup && !isUnansweredGroup && unreadCount > 0 && (
+            <div className="flex items-center gap-1">
+              {showUndo && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleUndo}
+                  className="h-7 text-xs gap-1"
+                >
+                  <Undo2 className="h-3 w-3" />
+                  Undo
+                </Button>
+              )}
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={handleMarkAsRead}
+                className="h-7 w-7 hover:bg-primary/10"
+                title={isExpanded ? "Mark all as read" : "Mark top 3 as read"}
+              >
+                <Check className="h-4 w-4" />
+              </Button>
+            </div>
+          )}
+
+          {isUnansweredGroup && unreadCount > 0 && (
             <div className="flex items-center gap-1">
               {showUndo && (
                 <Button

@@ -5,8 +5,9 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
+import { Button } from "@/components/ui/button";
 import { Notification } from "@/data/notifications";
-import { CheckSquare, Users, Headphones, Book } from "lucide-react";
+import { CheckSquare, Users, Headphones, Book, MessageSquare } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 
@@ -14,6 +15,7 @@ interface NotificationDetailProps {
   notification: Notification | null;
   isOpen: boolean;
   onClose: () => void;
+  onAnswer?: (notificationId: number) => void;
 }
 
 const moduleIcons = {
@@ -27,6 +29,7 @@ export const NotificationDetail = ({
   notification,
   isOpen,
   onClose,
+  onAnswer,
 }: NotificationDetailProps) => {
   if (!notification) return null;
 
@@ -39,6 +42,15 @@ export const NotificationDetail = ({
       .toUpperCase()
       .slice(0, 2);
   };
+
+  const handleAnswer = () => {
+    if (onAnswer) {
+      onAnswer(notification.id);
+      onClose();
+    }
+  };
+
+  const isFromMentions = notification.originalGroup === "Mentions" || notification.group === "Mentions" || notification.group === "Unanswered";
 
   return (
     <Sheet open={isOpen} onOpenChange={onClose}>
@@ -113,6 +125,23 @@ export const NotificationDetail = ({
                 <span className="capitalize">{notification.group}</span>
               </div>
             </div>
+
+            {/* Answer Button for Mentions */}
+            {isFromMentions && (
+              <div className="pt-4 border-t">
+                <Button
+                  onClick={handleAnswer}
+                  className="w-full gap-2"
+                  size="lg"
+                >
+                  <MessageSquare className="h-4 w-4" />
+                  Answer
+                </Button>
+                <p className="text-xs text-muted-foreground text-center mt-2">
+                  Clicking Answer will mark this as read and move to Seen
+                </p>
+              </div>
+            )}
           </div>
         </div>
       </SheetContent>
