@@ -2,8 +2,18 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { NotificationItem } from "./NotificationItem";
 import { Notification } from "@/data/notifications";
-import { Undo2, Check } from "lucide-react";
+import { Undo2, Check, AtSign, UserCheck, ListTodo, HelpCircle, CheckSquare2, Pin, Eye } from "lucide-react";
 import { UndoTimer } from "./UndoTimer";
+
+const groupIcons = {
+  "Mentions": AtSign,
+  "Assigned to Me": UserCheck,
+  "Task Updates": ListTodo,
+  "Approval": CheckSquare2,
+  "Unanswered": HelpCircle,
+  "Pinned": Pin,
+  "Seen": Eye,
+};
 
 interface PendingOperation {
   ids: number[];
@@ -80,14 +90,18 @@ export const NotificationGroup = ({
   // For "Seen" group, show mark all as read button instead
   const isSeenGroup = groupName === "Seen";
   const isUnansweredGroup = groupName === "Unanswered";
+  const GroupIcon = groupIcons[groupName as keyof typeof groupIcons];
 
   return (
     <div className="border-b last:border-b-0">
       <div className="px-4 py-3 bg-muted/30">
         <div className="flex items-center justify-between gap-2">
-          <span className="text-sm font-medium">
-            {groupName} ({notifications.length})
-          </span>
+          <div className="flex items-center gap-2">
+            {GroupIcon && <GroupIcon className="h-4 w-4 text-muted-foreground" />}
+            <span className="text-sm font-medium">
+              {groupName} ({notifications.length})
+            </span>
+          </div>
           
           {!isSeenGroup && !isUnansweredGroup && unreadCount > 0 && (
             <div className="flex items-center gap-1">

@@ -1,13 +1,13 @@
 export interface Notification {
   id: number;
-  group: "Mentions" | "Assigned to Me" | "Task Updates" | "Unanswered";
+  group: "Mentions" | "Assigned to Me" | "Task Updates" | "Unanswered" | "Approval";
   module: "Tasks" | "CRM Requests" | "Care Service" | "Knowledge Base";
   status: "read" | "unread";
   name: string;
   description: string;
   timestamp: string;
   viewed?: boolean;
-  originalGroup?: "Mentions" | "Assigned to Me" | "Task Updates";
+  originalGroup?: "Mentions" | "Assigned to Me" | "Task Updates" | "Approval";
   pinned?: boolean;
   priority: "high" | "medium" | "low";
   createdAt: Date;
@@ -207,5 +207,29 @@ export const notificationsData: Notification[] = [
     timestamp: "1d ago",
     priority: "medium",
     createdAt: new Date(Date.now() - 24 * 60 * 60 * 1000)
+  },
+  
+  // Approval (2)
+  {
+    id: 18,
+    group: "Approval",
+    module: "Tasks",
+    status: "unread",
+    name: "System",
+    description: "Budget proposal #2024-Q4 requires approval",
+    timestamp: "10m ago",
+    priority: "high",
+    createdAt: new Date(Date.now() - 10 * 60 * 1000)
+  },
+  {
+    id: 19,
+    group: "Approval",
+    module: "CRM Requests",
+    status: "unread",
+    name: "Workflow Bot",
+    description: "Contract 'Enterprise Deal' awaiting approval",
+    timestamp: "35m ago",
+    priority: "medium",
+    createdAt: new Date(Date.now() - 35 * 60 * 1000)
   },
 ];
