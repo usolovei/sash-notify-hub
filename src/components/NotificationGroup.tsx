@@ -1,8 +1,15 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { NotificationItem } from "./NotificationItem";
 import { Notification } from "@/data/notifications";
 import { Undo2, Check } from "lucide-react";
+
+interface PendingOperation {
+  ids: number[];
+  timer: NodeJS.Timeout;
+  type: 'individual' | 'group' | 'detail';
+  group?: string;
+}
 
 interface NotificationGroupProps {
   groupName: string;
@@ -10,9 +17,11 @@ interface NotificationGroupProps {
   unreadCount: number;
   onMarkAsRead: (id: number) => void;
   onMarkAsUnread: (id: number) => void;
-  onMarkGroupAsRead: (group: string) => void;
+  onMarkGroupAsRead: (group: string, ids: number[]) => void;
   onUndoGroupRead: (group: string) => void;
   onNotificationClick: (notification: Notification) => void;
+  pendingOperations: Map<string, PendingOperation>;
+  onUndoPendingOperation: (key: string) => void;
 }
 
 export const NotificationGroup = ({
@@ -24,17 +33,25 @@ export const NotificationGroup = ({
   onMarkGroupAsRead,
   onUndoGroupRead,
   onNotificationClick,
+  pendingOperations,
+  onUndoPendingOperation,
 }: NotificationGroupProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
-  const [showUndo, setShowUndo] = useState(false);
 
   const displayedNotifications = isExpanded
     ? notifications
     : notifications.slice(0, 3);
 
   const handleMarkAsRead = () => {
-    onMarkGroupAsRead(groupName);
-    setShowUndo(true);
+    // Get IDs to mark as read based on expanded state
+    const notificationsToMark = isExpanded ? notifications : notifications.slice(0, 3);
+    const idsToMark = notificationsToMark
+      .filter(n => n.status === "unread")
+      .map(n => n.id);
+    
+    if (idsToMark.length > 0) {
+      onMarkGroupAsRead(groupName, idsToMark);
+    }
   };
 
   const handleMarkAllAsUnread = () => {
@@ -46,23 +63,14 @@ export const NotificationGroup = ({
         onMarkAsUnread(notification.id);
       }
     });
-    
-    setShowUndo(true);
   };
-
-  useEffect(() => {
-    if (showUndo) {
-      const timer = setTimeout(() => {
-        setShowUndo(false);
-      }, 5000);
-      return () => clearTimeout(timer);
-    }
-  }, [showUndo]);
 
   const handleUndo = () => {
     onUndoGroupRead(groupName);
-    setShowUndo(false);
   };
+
+  const groupOpKey = `group-${groupName}`;
+  const hasPendingGroupOperation = pendingOperations.has(groupOpKey);
 
   // For "Seen" group, show mark all as read button instead
   const isSeenGroup = groupName === "Seen";
@@ -78,7 +86,7 @@ export const NotificationGroup = ({
           
           {!isSeenGroup && !isUnansweredGroup && unreadCount > 0 && (
             <div className="flex items-center gap-1">
-              {showUndo && (
+              {hasPendingGroupOperation && (
                 <Button
                   variant="ghost"
                   size="sm"
@@ -103,7 +111,7 @@ export const NotificationGroup = ({
 
           {isUnansweredGroup && unreadCount > 0 && (
             <div className="flex items-center gap-1">
-              {showUndo && (
+              {hasPendingGroupOperation && (
                 <Button
                   variant="ghost"
                   size="sm"
@@ -128,17 +136,6 @@ export const NotificationGroup = ({
 
           {isSeenGroup && notifications.length > 0 && (
             <div className="flex items-center gap-1">
-              {showUndo && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={handleUndo}
-                  className="h-7 text-xs gap-1"
-                >
-                  <Undo2 className="h-3 w-3" />
-                  Undo
-                </Button>
-              )}
               <Button
                 variant="ghost"
                 size="sm"
@@ -161,6 +158,8 @@ export const NotificationGroup = ({
             onMarkAsRead={onMarkAsRead}
             onMarkAsUnread={onMarkAsUnread}
             onNotificationClick={onNotificationClick}
+            pendingOperations={pendingOperations}
+            onUndoPendingOperation={onUndoPendingOperation}
           />
         ))}
       </div>

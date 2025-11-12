@@ -1,15 +1,24 @@
 import { useState } from "react";
-import { Circle, CheckCircle2, CheckSquare, Users, Headphones, Book } from "lucide-react";
+import { Circle, CheckCircle2, CheckSquare, Users, Headphones, Book, Undo2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Notification } from "@/data/notifications";
 import { cn } from "@/lib/utils";
+
+interface PendingOperation {
+  ids: number[];
+  timer: NodeJS.Timeout;
+  type: 'individual' | 'group' | 'detail';
+  group?: string;
+}
 
 interface NotificationItemProps {
   notification: Notification;
   onMarkAsRead: (id: number) => void;
   onMarkAsUnread: (id: number) => void;
   onNotificationClick: (notification: Notification) => void;
+  pendingOperations: Map<string, PendingOperation>;
+  onUndoPendingOperation: (key: string) => void;
 }
 
 const moduleIcons = {
@@ -24,8 +33,13 @@ export const NotificationItem = ({
   onMarkAsRead,
   onMarkAsUnread,
   onNotificationClick,
+  pendingOperations,
+  onUndoPendingOperation,
 }: NotificationItemProps) => {
   const [isHovered, setIsHovered] = useState(false);
+  
+  const individualOpKey = `individual-${notification.id}`;
+  const hasPendingOperation = pendingOperations.has(individualOpKey);
 
   const isUnread = notification.status === "unread";
   const ModuleIcon = moduleIcons[notification.module];
@@ -40,12 +54,13 @@ export const NotificationItem = ({
     onMarkAsUnread(notification.id);
   };
 
+  const handleUndo = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    onUndoPendingOperation(individualOpKey);
+  };
+
   const handleClick = () => {
     onNotificationClick(notification);
-    // Only auto-mark as read if NOT from Mentions group
-    if (isUnread && notification.group !== "Mentions" && notification.originalGroup !== "Mentions") {
-      onMarkAsRead(notification.id);
-    }
   };
 
   const getInitials = (name: string) => {
@@ -99,32 +114,44 @@ export const NotificationItem = ({
 
           {/* Action Buttons */}
           <div className="flex-shrink-0">
-            {isUnread ? (
-              // Unread notification: show mark as read button
-              isHovered && (
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={handleMarkAsRead}
-                  className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity"
-                  title="Mark as read"
-                >
-                  <Circle className="h-4 w-4 text-muted-foreground" />
-                </Button>
-              )
+            {hasPendingOperation ? (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleUndo}
+                className="h-7 text-xs gap-1 hover:bg-primary/10"
+              >
+                <Undo2 className="h-3 w-3" />
+                Undo
+              </Button>
             ) : (
-              // Read notification: show mark as unread button
-              isHovered && (
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={handleMarkAsUnread}
-                  className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity"
-                  title="Mark as unread"
-                >
-                  <CheckCircle2 className="h-4 w-4 text-muted-foreground" />
-                </Button>
-              )
+              <>
+                {isUnread ? (
+                  isHovered && (
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={handleMarkAsRead}
+                      className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity"
+                      title="Mark as read"
+                    >
+                      <Circle className="h-4 w-4 text-muted-foreground" />
+                    </Button>
+                  )
+                ) : (
+                  isHovered && (
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={handleMarkAsUnread}
+                      className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity"
+                      title="Mark as unread"
+                    >
+                      <CheckCircle2 className="h-4 w-4 text-muted-foreground" />
+                    </Button>
+                  )
+                )}
+              </>
             )}
           </div>
         </div>

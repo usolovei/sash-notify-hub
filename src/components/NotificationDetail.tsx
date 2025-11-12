@@ -1,15 +1,24 @@
 import { Button } from "@/components/ui/button";
 import { Notification } from "@/data/notifications";
-import { CheckSquare, Users, Headphones, Book, MessageSquare, X } from "lucide-react";
+import { CheckSquare, Users, Headphones, Book, MessageSquare, X, Undo2 } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+
+interface PendingOperation {
+  ids: number[];
+  timer: NodeJS.Timeout;
+  type: 'individual' | 'group' | 'detail';
+  group?: string;
+}
 
 interface NotificationDetailProps {
   notification: Notification | null;
   isOpen: boolean;
   onClose: () => void;
   onAnswer?: (notificationId: number) => void;
+  pendingOperations: Map<string, PendingOperation>;
+  onUndoPendingOperation: (key: string) => void;
 }
 
 const moduleIcons = {
@@ -24,10 +33,14 @@ export const NotificationDetail = ({
   isOpen,
   onClose,
   onAnswer,
+  pendingOperations,
+  onUndoPendingOperation,
 }: NotificationDetailProps) => {
   if (!notification) return null;
 
   const ModuleIcon = moduleIcons[notification.module];
+  const detailOpKey = `detail-${notification.id}`;
+  const hasPendingOperation = pendingOperations.has(detailOpKey);
   const getInitials = (name: string) => {
     return name
       .split(" ")
@@ -46,6 +59,10 @@ export const NotificationDetail = ({
 
   const isFromMentions = notification.originalGroup === "Mentions" || notification.group === "Mentions" || notification.group === "Unanswered";
 
+  const handleUndoMarkAsRead = () => {
+    onUndoPendingOperation(detailOpKey);
+  };
+
   return (
     <>
       {/* Backdrop */}
@@ -60,16 +77,29 @@ export const NotificationDetail = ({
       <div
         className={`fixed top-0 left-0 h-full bg-background shadow-2xl z-40 flex flex-col transition-transform duration-300 ${
           isOpen ? "translate-x-0" : "-translate-x-full"
-        }`}
+        } ${hasPendingOperation ? 'opacity-60' : ''}`}
         style={{ right: 'calc(500px + 0.5rem)' }}
       >
         <Card className="h-full border-0 rounded-none flex flex-col">
           <CardHeader className="border-b flex-shrink-0">
             <div className="flex items-center justify-between">
               <CardTitle>Notification Details</CardTitle>
-              <Button variant="ghost" size="icon" onClick={onClose}>
-                <X className="h-5 w-5" />
-              </Button>
+              <div className="flex items-center gap-2">
+                {hasPendingOperation && (
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    onClick={handleUndoMarkAsRead}
+                    className="gap-1"
+                  >
+                    <Undo2 className="h-4 w-4" />
+                    Keep Unread
+                  </Button>
+                )}
+                <Button variant="ghost" size="icon" onClick={onClose}>
+                  <X className="h-5 w-5" />
+                </Button>
+              </div>
             </div>
             <p className="text-sm text-muted-foreground">
               View the full details of this notification

@@ -1,8 +1,15 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useRef } from "react";
 import { AppHeader } from "@/components/AppHeader";
 import { NotificationSidebar } from "@/components/NotificationSidebar";
 import { NotificationDetail } from "@/components/NotificationDetail";
 import { notificationsData, Notification } from "@/data/notifications";
+
+interface PendingOperation {
+  ids: number[];
+  timer: NodeJS.Timeout;
+  type: 'individual' | 'group' | 'detail';
+  group?: string;
+}
 
 const Index = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -10,19 +17,54 @@ const Index = () => {
   const [groupReadHistory, setGroupReadHistory] = useState<Map<string, Notification[]>>(new Map());
   const [selectedNotification, setSelectedNotification] = useState<Notification | null>(null);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
+  const [pendingOperations, setPendingOperations] = useState<Map<string, PendingOperation>>(new Map());
+  const operationCounterRef = useRef(0);
 
   const unreadCount = useMemo(() => {
     return notifications.filter((n) => n.status === "unread").length;
   }, [notifications]);
 
   const handleMarkAsRead = (id: number) => {
-    setNotifications((prev) =>
-      prev.map((notification) =>
-        notification.id === id
-          ? { ...notification, status: "read" as const }
-          : notification
-      )
-    );
+    const opKey = `individual-${id}`;
+    
+    // Cancel any existing operation for this notification
+    const existing = pendingOperations.get(opKey);
+    if (existing) {
+      clearTimeout(existing.timer);
+    }
+
+    const timer = setTimeout(() => {
+      setNotifications((prev) =>
+        prev.map((notification) =>
+          notification.id === id
+            ? { ...notification, status: "read" as const }
+            : notification
+        )
+      );
+      setPendingOperations((prev) => {
+        const newMap = new Map(prev);
+        newMap.delete(opKey);
+        return newMap;
+      });
+    }, 4000);
+
+    setPendingOperations((prev) => new Map(prev).set(opKey, {
+      ids: [id],
+      timer,
+      type: 'individual'
+    }));
+  };
+
+  const handleUndoPendingOperation = (key: string) => {
+    const operation = pendingOperations.get(key);
+    if (operation) {
+      clearTimeout(operation.timer);
+      setPendingOperations((prev) => {
+        const newMap = new Map(prev);
+        newMap.delete(key);
+        return newMap;
+      });
+    }
   };
 
   const handleMarkAsUnread = (id: number) => {
@@ -35,41 +77,41 @@ const Index = () => {
     );
   };
 
-  const handleMarkGroupAsRead = (group: string) => {
-    const groupNotifications = notifications.filter(
-      (n) => n.group === group && n.status === "unread"
-    );
+  const handleMarkGroupAsRead = (group: string, ids: number[]) => {
+    const opKey = `group-${group}`;
     
-    setGroupReadHistory((prev) => new Map(prev).set(group, groupNotifications));
-    
-    setNotifications((prev) =>
-      prev.map((notification) =>
-        notification.group === group && notification.status === "unread"
-          ? { ...notification, status: "read" as const }
-          : notification
-      )
-    );
+    // Cancel any existing operation for this group
+    const existing = pendingOperations.get(opKey);
+    if (existing) {
+      clearTimeout(existing.timer);
+    }
+
+    const timer = setTimeout(() => {
+      setNotifications((prev) =>
+        prev.map((notification) =>
+          ids.includes(notification.id)
+            ? { ...notification, status: "read" as const }
+            : notification
+        )
+      );
+      setPendingOperations((prev) => {
+        const newMap = new Map(prev);
+        newMap.delete(opKey);
+        return newMap;
+      });
+    }, 4000);
+
+    setPendingOperations((prev) => new Map(prev).set(opKey, {
+      ids,
+      timer,
+      type: 'group',
+      group
+    }));
   };
 
   const handleUndoGroupRead = (group: string) => {
-    const historyItems = groupReadHistory.get(group);
-    if (!historyItems) return;
-
-    const historyIds = new Set(historyItems.map((n) => n.id));
-    
-    setNotifications((prev) =>
-      prev.map((notification) =>
-        historyIds.has(notification.id)
-          ? { ...notification, status: "unread" as const }
-          : notification
-      )
-    );
-    
-    setGroupReadHistory((prev) => {
-      const newHistory = new Map(prev);
-      newHistory.delete(group);
-      return newHistory;
-    });
+    const opKey = `group-${group}`;
+    handleUndoPendingOperation(opKey);
   };
 
   const handleNotificationClick = (notification: Notification) => {
@@ -90,6 +132,36 @@ const Index = () => {
             : n
         )
       );
+    } else if (notification.status === "unread") {
+      // For non-mention unread notifications, add delay before marking as read
+      const opKey = `detail-${notification.id}`;
+      
+      // Cancel any existing operation for this notification
+      const existing = pendingOperations.get(opKey);
+      if (existing) {
+        clearTimeout(existing.timer);
+      }
+
+      const timer = setTimeout(() => {
+        setNotifications((prev) =>
+          prev.map((n) =>
+            n.id === notification.id
+              ? { ...n, status: "read" as const }
+              : n
+          )
+        );
+        setPendingOperations((prev) => {
+          const newMap = new Map(prev);
+          newMap.delete(opKey);
+          return newMap;
+        });
+      }, 4000);
+
+      setPendingOperations((prev) => new Map(prev).set(opKey, {
+        ids: [notification.id],
+        timer,
+        type: 'detail'
+      }));
     }
   };
 
@@ -145,6 +217,8 @@ const Index = () => {
         onMarkGroupAsRead={handleMarkGroupAsRead}
         onUndoGroupRead={handleUndoGroupRead}
         onNotificationClick={handleNotificationClick}
+        pendingOperations={pendingOperations}
+        onUndoPendingOperation={handleUndoPendingOperation}
       />
 
       <NotificationDetail
@@ -152,6 +226,8 @@ const Index = () => {
         isOpen={isDetailOpen}
         onClose={() => setIsDetailOpen(false)}
         onAnswer={handleAnswer}
+        pendingOperations={pendingOperations}
+        onUndoPendingOperation={handleUndoPendingOperation}
       />
     </div>
   );

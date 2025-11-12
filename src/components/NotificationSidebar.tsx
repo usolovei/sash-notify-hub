@@ -12,15 +12,24 @@ import {
 import { Notification } from "@/data/notifications";
 import { NotificationGroup } from "./NotificationGroup";
 
+interface PendingOperation {
+  ids: number[];
+  timer: NodeJS.Timeout;
+  type: 'individual' | 'group' | 'detail';
+  group?: string;
+}
+
 interface NotificationSidebarProps {
   isOpen: boolean;
   onClose: () => void;
   notifications: Notification[];
   onMarkAsRead: (id: number) => void;
   onMarkAsUnread: (id: number) => void;
-  onMarkGroupAsRead: (group: string) => void;
+  onMarkGroupAsRead: (group: string, ids: number[]) => void;
   onUndoGroupRead: (group: string) => void;
   onNotificationClick: (notification: Notification) => void;
+  pendingOperations: Map<string, PendingOperation>;
+  onUndoPendingOperation: (key: string) => void;
 }
 
 export const NotificationSidebar = ({
@@ -32,6 +41,8 @@ export const NotificationSidebar = ({
   onMarkGroupAsRead,
   onUndoGroupRead,
   onNotificationClick,
+  pendingOperations,
+  onUndoPendingOperation,
 }: NotificationSidebarProps) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [moduleFilter, setModuleFilter] = useState("All Modules");
@@ -144,11 +155,13 @@ export const NotificationSidebar = ({
                 notifications={groupNotifications}
                 unreadCount={unreadCount}
                 onMarkAsRead={onMarkAsRead}
-                onMarkAsUnread={onMarkAsUnread}
-                onMarkGroupAsRead={onMarkGroupAsRead}
-                onUndoGroupRead={onUndoGroupRead}
-                onNotificationClick={onNotificationClick}
-              />
+              onMarkAsUnread={onMarkAsUnread}
+              onMarkGroupAsRead={onMarkGroupAsRead}
+              onUndoGroupRead={onUndoGroupRead}
+              onNotificationClick={onNotificationClick}
+              pendingOperations={pendingOperations}
+              onUndoPendingOperation={onUndoPendingOperation}
+            />
             );
           })}
           
@@ -164,6 +177,8 @@ export const NotificationSidebar = ({
               onMarkGroupAsRead={onMarkGroupAsRead}
               onUndoGroupRead={onUndoGroupRead}
               onNotificationClick={onNotificationClick}
+              pendingOperations={pendingOperations}
+              onUndoPendingOperation={onUndoPendingOperation}
             />
           )}
         </div>
