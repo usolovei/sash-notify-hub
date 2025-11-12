@@ -23,6 +23,8 @@ interface NotificationGroupProps {
   onNotificationClick: (notification: Notification) => void;
   pendingOperations: Map<string, PendingOperation>;
   onUndoPendingOperation: (key: string) => void;
+  onPin: (id: number) => void;
+  onUnpin: (id: number) => void;
 }
 
 export const NotificationGroup = ({
@@ -36,6 +38,8 @@ export const NotificationGroup = ({
   onNotificationClick,
   pendingOperations,
   onUndoPendingOperation,
+  onPin,
+  onUnpin,
 }: NotificationGroupProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
 
@@ -163,6 +167,9 @@ export const NotificationGroup = ({
             onNotificationClick={onNotificationClick}
             pendingOperations={pendingOperations}
             onUndoPendingOperation={onUndoPendingOperation}
+            onPin={onPin}
+            onUnpin={onUnpin}
+            isPinned={groupName === "Pinned"}
           />
         ))}
       </div>

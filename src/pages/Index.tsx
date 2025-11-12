@@ -176,6 +176,26 @@ const Index = () => {
     );
   };
 
+  const handlePin = (id: number) => {
+    setNotifications((prev) =>
+      prev.map((notification) =>
+        notification.id === id
+          ? { ...notification, pinned: true, status: "read" as const }
+          : notification
+      )
+    );
+  };
+
+  const handleUnpin = (id: number) => {
+    setNotifications((prev) =>
+      prev.map((notification) =>
+        notification.id === id
+          ? { ...notification, pinned: false }
+          : notification
+      )
+    );
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <AppHeader
@@ -219,6 +239,8 @@ const Index = () => {
         onNotificationClick={handleNotificationClick}
         pendingOperations={pendingOperations}
         onUndoPendingOperation={handleUndoPendingOperation}
+        onPin={handlePin}
+        onUnpin={handleUnpin}
       />
 
       <NotificationDetail
