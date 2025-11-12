@@ -30,6 +30,8 @@ interface NotificationSidebarProps {
   onNotificationClick: (notification: Notification) => void;
   pendingOperations: Map<string, PendingOperation>;
   onUndoPendingOperation: (key: string) => void;
+  onPin: (id: number) => void;
+  onUnpin: (id: number) => void;
 }
 
 export const NotificationSidebar = ({
@@ -43,6 +45,8 @@ export const NotificationSidebar = ({
   onNotificationClick,
   pendingOperations,
   onUndoPendingOperation,
+  onPin,
+  onUnpin,
 }: NotificationSidebarProps) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [moduleFilter, setModuleFilter] = useState("All Modules");
@@ -62,18 +66,16 @@ export const NotificationSidebar = ({
   }, [notifications, searchQuery, moduleFilter]);
 
   const groupedNotifications = useMemo(() => {
+    const filtered = filteredNotifications.filter((n) => n.status === "unread" && !n.pinned);
     const groups: Record<string, Notification[]> = {
       Mentions: [],
       "Assigned to Me": [],
       "Task Updates": [],
       Unanswered: [],
-      Seen: [],
     };
 
-    filteredNotifications.forEach((notification) => {
-      if (notification.status === "read") {
-        groups.Seen.push(notification);
-      } else if (notification.group === "Unanswered" || (notification.originalGroup === "Mentions" && notification.viewed && notification.status === "unread")) {
+    filtered.forEach((notification) => {
+      if (notification.group === "Unanswered" || (notification.originalGroup === "Mentions" && notification.viewed && notification.status === "unread")) {
         groups.Unanswered.push(notification);
       } else {
         groups[notification.group].push(notification);
@@ -81,6 +83,14 @@ export const NotificationSidebar = ({
     });
 
     return groups;
+  }, [filteredNotifications]);
+
+  const pinnedNotifications = useMemo(() => {
+    return filteredNotifications.filter((n) => n.pinned);
+  }, [filteredNotifications]);
+
+  const seenNotifications = useMemo(() => {
+    return filteredNotifications.filter((n) => n.status === "read" && !n.pinned);
   }, [filteredNotifications]);
 
   return (
@@ -141,36 +151,12 @@ export const NotificationSidebar = ({
 
         {/* Notification Groups */}
         <div className="flex-1 overflow-y-auto">
-          {/* Show unread groups first */}
-          {["Mentions", "Assigned to Me", "Task Updates", "Unanswered"].map((groupName) => {
-            const groupNotifications = groupedNotifications[groupName];
-            const unreadCount = groupNotifications.filter(n => n.status === "unread").length;
-            
-            if (groupNotifications.length === 0) return null;
-
-            return (
-              <NotificationGroup
-                key={groupName}
-                groupName={groupName}
-                notifications={groupNotifications}
-                unreadCount={unreadCount}
-                onMarkAsRead={onMarkAsRead}
-              onMarkAsUnread={onMarkAsUnread}
-              onMarkGroupAsRead={onMarkGroupAsRead}
-              onUndoGroupRead={onUndoGroupRead}
-              onNotificationClick={onNotificationClick}
-              pendingOperations={pendingOperations}
-              onUndoPendingOperation={onUndoPendingOperation}
-            />
-            );
-          })}
-          
-          {/* Show Seen group at the bottom */}
-          {groupedNotifications.Seen.length > 0 && (
+          {/* Show Pinned group first */}
+          {pinnedNotifications.length > 0 && (
             <NotificationGroup
-              key="Seen"
-              groupName="Seen"
-              notifications={groupedNotifications.Seen}
+              key="Pinned"
+              groupName="Pinned"
+              notifications={pinnedNotifications}
               unreadCount={0}
               onMarkAsRead={onMarkAsRead}
               onMarkAsUnread={onMarkAsUnread}
@@ -179,6 +165,53 @@ export const NotificationSidebar = ({
               onNotificationClick={onNotificationClick}
               pendingOperations={pendingOperations}
               onUndoPendingOperation={onUndoPendingOperation}
+              onPin={onPin}
+              onUnpin={onUnpin}
+            />
+          )}
+
+          {/* Show unread groups */}
+          {["Mentions", "Assigned to Me", "Task Updates", "Unanswered"].map((groupName) => {
+            const groupNotifications = groupedNotifications[groupName];
+            const unreadCount = groupNotifications?.filter(n => n.status === "unread").length || 0;
+            
+            if (!groupNotifications || groupNotifications.length === 0) return null;
+
+            return (
+              <NotificationGroup
+                key={groupName}
+                groupName={groupName}
+                notifications={groupNotifications}
+                unreadCount={unreadCount}
+                onMarkAsRead={onMarkAsRead}
+                onMarkAsUnread={onMarkAsUnread}
+                onMarkGroupAsRead={onMarkGroupAsRead}
+                onUndoGroupRead={onUndoGroupRead}
+                onNotificationClick={onNotificationClick}
+                pendingOperations={pendingOperations}
+                onUndoPendingOperation={onUndoPendingOperation}
+                onPin={onPin}
+                onUnpin={onUnpin}
+              />
+            );
+          })}
+          
+          {/* Show Seen group at the bottom */}
+          {seenNotifications.length > 0 && (
+            <NotificationGroup
+              key="Seen"
+              groupName="Seen"
+              notifications={seenNotifications}
+              unreadCount={0}
+              onMarkAsRead={onMarkAsRead}
+              onMarkAsUnread={onMarkAsUnread}
+              onMarkGroupAsRead={onMarkGroupAsRead}
+              onUndoGroupRead={onUndoGroupRead}
+              onNotificationClick={onNotificationClick}
+              pendingOperations={pendingOperations}
+              onUndoPendingOperation={onUndoPendingOperation}
+              onPin={onPin}
+              onUnpin={onUnpin}
             />
           )}
         </div>

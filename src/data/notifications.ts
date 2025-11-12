@@ -8,6 +8,7 @@ export interface Notification {
   timestamp: string;
   viewed?: boolean;
   originalGroup?: "Mentions" | "Assigned to Me" | "Task Updates";
+  pinned?: boolean;
 }
 
 export const notificationsData: Notification[] = [

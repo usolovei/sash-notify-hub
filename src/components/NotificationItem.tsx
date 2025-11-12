@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Circle, CheckCircle2, CheckSquare, Users, Headphones, Book, Undo2 } from "lucide-react";
+import { Circle, CheckCircle2, CheckSquare, Users, Headphones, Book, Undo2, Pin, PinOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Notification } from "@/data/notifications";
@@ -20,6 +20,9 @@ interface NotificationItemProps {
   onNotificationClick: (notification: Notification) => void;
   pendingOperations: Map<string, PendingOperation>;
   onUndoPendingOperation: (key: string) => void;
+  onPin: (id: number) => void;
+  onUnpin: (id: number) => void;
+  isPinned: boolean;
 }
 
 const moduleIcons = {
@@ -36,6 +39,9 @@ export const NotificationItem = ({
   onNotificationClick,
   pendingOperations,
   onUndoPendingOperation,
+  onPin,
+  onUnpin,
+  isPinned,
 }: NotificationItemProps) => {
   const [isHovered, setIsHovered] = useState(false);
   
@@ -60,6 +66,16 @@ export const NotificationItem = ({
   const handleUndo = (e: React.MouseEvent) => {
     e.stopPropagation();
     onUndoPendingOperation(individualOpKey);
+  };
+
+  const handlePin = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    onPin(notification.id);
+  };
+
+  const handleUnpin = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    onUnpin(notification.id);
   };
 
   const handleClick = () => {
@@ -129,31 +145,65 @@ export const NotificationItem = ({
                 <Undo2 className="h-3 w-3" />
                 Undo
               </Button>
+            ) : isPinned ? (
+              isHovered && (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={handleUnpin}
+                  className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity"
+                  title="Unpin"
+                >
+                  <PinOff className="h-4 w-4 text-muted-foreground" />
+                </Button>
+              )
             ) : (
               <>
                 {isUnread ? (
                   isHovered && (
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={handleMarkAsRead}
-                      className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity"
-                      title="Mark as read"
-                    >
-                      <Circle className="h-4 w-4 text-muted-foreground" />
-                    </Button>
+                    <div className="flex gap-1">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={handlePin}
+                        className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity"
+                        title="Pin"
+                      >
+                        <Pin className="h-4 w-4 text-muted-foreground" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={handleMarkAsRead}
+                        className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity"
+                        title="Mark as read"
+                      >
+                        <Circle className="h-4 w-4 text-muted-foreground" />
+                      </Button>
+                    </div>
                   )
                 ) : (
                   isHovered && (
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={handleMarkAsUnread}
-                      className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity"
-                      title="Mark as unread"
-                    >
-                      <CheckCircle2 className="h-4 w-4 text-muted-foreground" />
-                    </Button>
+                    <div className="flex gap-1">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={handlePin}
+                        className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity"
+                        title="Pin"
+                      >
+                        <Pin className="h-4 w-4 text-muted-foreground" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={handleMarkAsUnread}
+                        className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity"
+                        title="Mark as unread"
+                      >
+                        <CheckCircle2 className="h-4 w-4 text-muted-foreground" />
+                      </Button>
+                    </div>
                   )
                 )}
               </>
