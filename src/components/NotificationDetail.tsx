@@ -4,6 +4,7 @@ import { CheckSquare, Users, Headphones, Book, MessageSquare, X, Undo2 } from "l
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { UndoTimer } from "./UndoTimer";
 
 interface PendingOperation {
   ids: number[];
@@ -92,6 +93,7 @@ export const NotificationDetail = ({
                     onClick={handleUndoMarkAsRead}
                     className="gap-1"
                   >
+                    <UndoTimer duration={3000} size={16} />
                     <Undo2 className="h-4 w-4" />
                     Keep Unread
                   </Button>

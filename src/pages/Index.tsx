@@ -46,7 +46,7 @@ const Index = () => {
         newMap.delete(opKey);
         return newMap;
       });
-    }, 4000);
+    }, 3000);
 
     setPendingOperations((prev) => new Map(prev).set(opKey, {
       ids: [id],
@@ -99,7 +99,7 @@ const Index = () => {
         newMap.delete(opKey);
         return newMap;
       });
-    }, 4000);
+    }, 3000);
 
     setPendingOperations((prev) => new Map(prev).set(opKey, {
       ids,
@@ -155,7 +155,7 @@ const Index = () => {
           newMap.delete(opKey);
           return newMap;
         });
-      }, 4000);
+      }, 3000);
 
       setPendingOperations((prev) => new Map(prev).set(opKey, {
         ids: [notification.id],

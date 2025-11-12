@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { NotificationItem } from "./NotificationItem";
 import { Notification } from "@/data/notifications";
 import { Undo2, Check } from "lucide-react";
+import { UndoTimer } from "./UndoTimer";
 
 interface PendingOperation {
   ids: number[];
@@ -93,6 +94,7 @@ export const NotificationGroup = ({
                   onClick={handleUndo}
                   className="h-7 text-xs gap-1"
                 >
+                  <UndoTimer duration={3000} size={14} />
                   <Undo2 className="h-3 w-3" />
                   Undo
                 </Button>
@@ -118,6 +120,7 @@ export const NotificationGroup = ({
                   onClick={handleUndo}
                   className="h-7 text-xs gap-1"
                 >
+                  <UndoTimer duration={3000} size={14} />
                   <Undo2 className="h-3 w-3" />
                   Undo
                 </Button>

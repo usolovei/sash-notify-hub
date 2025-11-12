@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Notification } from "@/data/notifications";
 import { cn } from "@/lib/utils";
+import { UndoTimer } from "./UndoTimer";
 
 interface PendingOperation {
   ids: number[];
@@ -124,6 +125,7 @@ export const NotificationItem = ({
                 onClick={handleUndo}
                 className="h-7 text-xs gap-1 hover:bg-primary/10"
               >
+                <UndoTimer duration={3000} size={14} />
                 <Undo2 className="h-3 w-3" />
                 Undo
               </Button>
