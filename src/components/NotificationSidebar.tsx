@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { X, Search, CheckCircle2, Filter, AtSign, UserCheck, ListTodo, HelpCircle, CheckSquare2, Pin } from "lucide-react";
+import { X, Search, CheckCircle2, Filter, AtSign, UserCheck, ListTodo, HelpCircle, CheckSquare2, Pin, Undo2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
@@ -13,12 +13,12 @@ import { Badge } from "@/components/ui/badge";
 import { Notification } from "@/data/notifications";
 import { NotificationGroup } from "./NotificationGroup";
 import { NotificationSettings } from "./NotificationSettings";
+import { UndoTimer } from "./UndoTimer";
 
-interface PendingOperation {
+interface LastOperation {
   ids: number[];
-  timer: NodeJS.Timeout;
-  type: 'individual' | 'group' | 'detail';
-  group?: string;
+  originalStatus: 'read' | 'unread';
+  timestamp: number;
 }
 
 interface NotificationSidebarProps {
@@ -28,10 +28,9 @@ interface NotificationSidebarProps {
   onMarkAsRead: (id: number) => void;
   onMarkAsUnread: (id: number) => void;
   onMarkGroupAsRead: (group: string, ids: number[]) => void;
-  onUndoGroupRead: (group: string) => void;
   onNotificationClick: (notification: Notification) => void;
-  pendingOperations: Map<string, PendingOperation>;
-  onUndoPendingOperation: (key: string) => void;
+  lastOperation: LastOperation | null;
+  onUndo: () => void;
   onPin: (id: number) => void;
   onUnpin: (id: number) => void;
 }
@@ -43,10 +42,9 @@ export const NotificationSidebar = ({
   onMarkAsRead,
   onMarkAsUnread,
   onMarkGroupAsRead,
-  onUndoGroupRead,
   onNotificationClick,
-  pendingOperations,
-  onUndoPendingOperation,
+  lastOperation,
+  onUndo,
   onPin,
   onUnpin,
 }: NotificationSidebarProps) => {
@@ -224,10 +222,7 @@ export const NotificationSidebar = ({
               onMarkAsRead={onMarkAsRead}
               onMarkAsUnread={onMarkAsUnread}
               onMarkGroupAsRead={onMarkGroupAsRead}
-              onUndoGroupRead={onUndoGroupRead}
               onNotificationClick={onNotificationClick}
-              pendingOperations={pendingOperations}
-              onUndoPendingOperation={onUndoPendingOperation}
               onPin={onPin}
               onUnpin={onUnpin}
             />
@@ -249,10 +244,7 @@ export const NotificationSidebar = ({
                 onMarkAsRead={onMarkAsRead}
                 onMarkAsUnread={onMarkAsUnread}
                 onMarkGroupAsRead={onMarkGroupAsRead}
-                onUndoGroupRead={onUndoGroupRead}
                 onNotificationClick={onNotificationClick}
-                pendingOperations={pendingOperations}
-                onUndoPendingOperation={onUndoPendingOperation}
                 onPin={onPin}
                 onUnpin={onUnpin}
               />
@@ -269,15 +261,26 @@ export const NotificationSidebar = ({
               onMarkAsRead={onMarkAsRead}
               onMarkAsUnread={onMarkAsUnread}
               onMarkGroupAsRead={onMarkGroupAsRead}
-              onUndoGroupRead={onUndoGroupRead}
               onNotificationClick={onNotificationClick}
-              pendingOperations={pendingOperations}
-              onUndoPendingOperation={onUndoPendingOperation}
               onPin={onPin}
               onUnpin={onUnpin}
             />
           )}
         </div>
+
+        {/* Floating Undo Button */}
+        {lastOperation && (
+          <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-10 animate-in slide-in-from-bottom-4">
+            <Button
+              onClick={onUndo}
+              size="lg"
+              className="shadow-lg gap-2 bg-primary hover:bg-primary/90"
+            >
+              <UndoTimer duration={3000} size={18} />
+              Undo Mark as Read
+            </Button>
+          </div>
+        )}
       </div>
     </>
   );

@@ -1,25 +1,15 @@
 import { Button } from "@/components/ui/button";
 import { Notification } from "@/data/notifications";
-import { CheckSquare, Users, Headphones, Book, MessageSquare, X, Undo2 } from "lucide-react";
+import { CheckSquare, Users, Headphones, Book, MessageSquare, X } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { UndoTimer } from "./UndoTimer";
-
-interface PendingOperation {
-  ids: number[];
-  timer: NodeJS.Timeout;
-  type: 'individual' | 'group' | 'detail';
-  group?: string;
-}
 
 interface NotificationDetailProps {
   notification: Notification | null;
   isOpen: boolean;
   onClose: () => void;
   onAnswer?: (notificationId: number) => void;
-  pendingOperations: Map<string, PendingOperation>;
-  onUndoPendingOperation: (key: string) => void;
 }
 
 const moduleIcons = {
@@ -34,14 +24,10 @@ export const NotificationDetail = ({
   isOpen,
   onClose,
   onAnswer,
-  pendingOperations,
-  onUndoPendingOperation,
 }: NotificationDetailProps) => {
   if (!notification) return null;
 
   const ModuleIcon = moduleIcons[notification.module];
-  const detailOpKey = `detail-${notification.id}`;
-  const hasPendingOperation = pendingOperations.has(detailOpKey);
   const getInitials = (name: string) => {
     return name
       .split(" ")
@@ -59,10 +45,6 @@ export const NotificationDetail = ({
   };
 
   const isFromMentions = notification.originalGroup === "Mentions" || notification.group === "Mentions" || notification.group === "Unanswered";
-
-  const handleUndoMarkAsRead = () => {
-    onUndoPendingOperation(detailOpKey);
-  };
 
   return (
     <>
@@ -85,23 +67,9 @@ export const NotificationDetail = ({
           <CardHeader className="border-b flex-shrink-0">
             <div className="flex items-center justify-between">
               <CardTitle>Notification Details</CardTitle>
-              <div className="flex items-center gap-2">
-                {hasPendingOperation && (
-                  <Button 
-                    variant="ghost" 
-                    size="sm" 
-                    onClick={handleUndoMarkAsRead}
-                    className="gap-1"
-                  >
-                    <UndoTimer duration={3000} size={16} />
-                    <Undo2 className="h-4 w-4" />
-                    Keep Unread
-                  </Button>
-                )}
-                <Button variant="ghost" size="icon" onClick={onClose}>
-                  <X className="h-5 w-5" />
-                </Button>
-              </div>
+              <Button variant="ghost" size="icon" onClick={onClose}>
+                <X className="h-5 w-5" />
+              </Button>
             </div>
             <p className="text-sm text-muted-foreground">
               View the full details of this notification

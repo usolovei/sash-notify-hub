@@ -1,26 +1,16 @@
 import { useState } from "react";
-import { Circle, CheckCircle2, CheckSquare, Users, Headphones, Book, Undo2, Pin, PinOff } from "lucide-react";
+import { Circle, CheckCircle2, CheckSquare, Users, Headphones, Book, Pin, PinOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Notification } from "@/data/notifications";
 import { cn } from "@/lib/utils";
-import { UndoTimer } from "./UndoTimer";
-
-interface PendingOperation {
-  ids: number[];
-  timer: NodeJS.Timeout;
-  type: 'individual' | 'group' | 'detail';
-  group?: string;
-}
 
 interface NotificationItemProps {
   notification: Notification;
   onMarkAsRead: (id: number) => void;
   onMarkAsUnread: (id: number) => void;
   onNotificationClick: (notification: Notification) => void;
-  pendingOperations: Map<string, PendingOperation>;
-  onUndoPendingOperation: (key: string) => void;
   onPin: (id: number) => void;
   onUnpin: (id: number) => void;
   isPinned: boolean;
@@ -38,19 +28,12 @@ export const NotificationItem = ({
   onMarkAsRead,
   onMarkAsUnread,
   onNotificationClick,
-  pendingOperations,
-  onUndoPendingOperation,
   onPin,
   onUnpin,
   isPinned,
 }: NotificationItemProps) => {
   const [isHovered, setIsHovered] = useState(false);
   
-  const individualOpKey = `individual-${notification.id}`;
-  const detailOpKey = `detail-${notification.id}`;
-  const hasPendingOperation = pendingOperations.has(individualOpKey);
-  const hasPendingDetailOperation = pendingOperations.has(detailOpKey);
-
   const isUnread = notification.status === "unread";
   const ModuleIcon = moduleIcons[notification.module];
 
@@ -62,11 +45,6 @@ export const NotificationItem = ({
   const handleMarkAsUnread = (e: React.MouseEvent) => {
     e.stopPropagation();
     onMarkAsUnread(notification.id);
-  };
-
-  const handleUndo = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    onUndoPendingOperation(individualOpKey);
   };
 
   const handlePin = (e: React.MouseEvent) => {
@@ -96,8 +74,7 @@ export const NotificationItem = ({
     <div
       className={cn(
         "px-4 py-3 flex items-start gap-3 transition-all relative group cursor-pointer",
-        isUnread ? "bg-notification-unread" : "bg-background hover:bg-muted/30",
-        hasPendingDetailOperation && "opacity-60"
+        isUnread ? "bg-notification-unread" : "bg-background hover:bg-muted/30"
       )}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
@@ -148,18 +125,7 @@ export const NotificationItem = ({
 
           {/* Action Buttons */}
           <div className="flex-shrink-0">
-            {hasPendingOperation ? (
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={handleUndo}
-                className="h-7 text-xs gap-1 hover:bg-primary/10"
-              >
-                <UndoTimer duration={3000} size={14} />
-                <Undo2 className="h-3 w-3" />
-                Undo
-              </Button>
-            ) : isPinned ? (
+            {isPinned ? (
               <Button
                 variant="ghost"
                 size="icon"

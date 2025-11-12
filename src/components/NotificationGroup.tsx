@@ -2,8 +2,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { NotificationItem } from "./NotificationItem";
 import { Notification } from "@/data/notifications";
-import { Undo2, Check, AtSign, UserCheck, ListTodo, HelpCircle, CheckSquare2, Pin, Eye } from "lucide-react";
-import { UndoTimer } from "./UndoTimer";
+import { Check, AtSign, UserCheck, ListTodo, HelpCircle, CheckSquare2, Pin, Eye } from "lucide-react";
 
 const groupIcons = {
   "Mentions": AtSign,
@@ -15,13 +14,6 @@ const groupIcons = {
   "Seen": Eye,
 };
 
-interface PendingOperation {
-  ids: number[];
-  timer: NodeJS.Timeout;
-  type: 'individual' | 'group' | 'detail';
-  group?: string;
-}
-
 interface NotificationGroupProps {
   groupName: string;
   notifications: Notification[];
@@ -29,10 +21,7 @@ interface NotificationGroupProps {
   onMarkAsRead: (id: number) => void;
   onMarkAsUnread: (id: number) => void;
   onMarkGroupAsRead: (group: string, ids: number[]) => void;
-  onUndoGroupRead: (group: string) => void;
   onNotificationClick: (notification: Notification) => void;
-  pendingOperations: Map<string, PendingOperation>;
-  onUndoPendingOperation: (key: string) => void;
   onPin: (id: number) => void;
   onUnpin: (id: number) => void;
 }
@@ -44,10 +33,7 @@ export const NotificationGroup = ({
   onMarkAsRead,
   onMarkAsUnread,
   onMarkGroupAsRead,
-  onUndoGroupRead,
   onNotificationClick,
-  pendingOperations,
-  onUndoPendingOperation,
   onPin,
   onUnpin,
 }: NotificationGroupProps) => {
@@ -80,13 +66,6 @@ export const NotificationGroup = ({
     });
   };
 
-  const handleUndo = () => {
-    onUndoGroupRead(groupName);
-  };
-
-  const groupOpKey = `group-${groupName}`;
-  const hasPendingGroupOperation = pendingOperations.has(groupOpKey);
-
   // For "Seen" group, show mark all as read button instead
   const isSeenGroup = groupName === "Seen";
   const isUnansweredGroup = groupName === "Unanswered";
@@ -104,69 +83,39 @@ export const NotificationGroup = ({
           </div>
           
           {!isSeenGroup && !isUnansweredGroup && unreadCount > 0 && (
-            <div className="flex items-center gap-1">
-              {hasPendingGroupOperation && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={handleUndo}
-                  className="h-7 text-xs gap-1"
-                >
-                  <UndoTimer duration={3000} size={14} />
-                  <Undo2 className="h-3 w-3" />
-                  Undo
-                </Button>
-              )}
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={handleMarkAsRead}
-                className="h-7 w-7 hover:bg-primary/10"
-                title={isExpanded ? "Mark all as read" : "Mark top 3 as read"}
-              >
-                <Check className="h-4 w-4" />
-              </Button>
-            </div>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={handleMarkAsRead}
+              className="h-7 w-7 hover:bg-primary/10"
+              title={isExpanded ? "Mark all as read" : "Mark top 3 as read"}
+            >
+              <Check className="h-4 w-4" />
+            </Button>
           )}
 
           {isUnansweredGroup && unreadCount > 0 && (
-            <div className="flex items-center gap-1">
-              {hasPendingGroupOperation && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={handleUndo}
-                  className="h-7 text-xs gap-1"
-                >
-                  <UndoTimer duration={3000} size={14} />
-                  <Undo2 className="h-3 w-3" />
-                  Undo
-                </Button>
-              )}
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={handleMarkAsRead}
-                className="h-7 w-7 hover:bg-primary/10"
-                title={isExpanded ? "Mark all as read" : "Mark top 3 as read"}
-              >
-                <Check className="h-4 w-4" />
-              </Button>
-            </div>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={handleMarkAsRead}
+              className="h-7 w-7 hover:bg-primary/10"
+              title={isExpanded ? "Mark all as read" : "Mark top 3 as read"}
+            >
+              <Check className="h-4 w-4" />
+            </Button>
           )}
 
           {isSeenGroup && notifications.length > 0 && (
-            <div className="flex items-center gap-1">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={handleMarkAllAsUnread}
-                className="h-7 text-xs hover:bg-primary/10"
-                title={isExpanded ? "Mark all as unread" : "Mark top 3 as unread"}
-              >
-                Mark all as unread
-              </Button>
-            </div>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleMarkAllAsUnread}
+              className="h-7 text-xs hover:bg-primary/10"
+              title={isExpanded ? "Mark all as unread" : "Mark top 3 as unread"}
+            >
+              Mark all as unread
+            </Button>
           )}
         </div>
       </div>
@@ -179,8 +128,6 @@ export const NotificationGroup = ({
             onMarkAsRead={onMarkAsRead}
             onMarkAsUnread={onMarkAsUnread}
             onNotificationClick={onNotificationClick}
-            pendingOperations={pendingOperations}
-            onUndoPendingOperation={onUndoPendingOperation}
             onPin={onPin}
             onUnpin={onUnpin}
             isPinned={groupName === "Pinned"}
