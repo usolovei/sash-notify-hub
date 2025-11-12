@@ -77,7 +77,7 @@ export const NotificationDetail = ({
       <div
         className={`fixed top-0 left-0 h-full bg-background shadow-2xl z-40 flex flex-col transition-transform duration-300 ${
           isOpen ? "translate-x-0" : "-translate-x-full"
-        } ${hasPendingOperation ? 'opacity-60' : ''}`}
+        }`}
         style={{ right: 'calc(500px + 0.5rem)' }}
       >
         <Card className="h-full border-0 rounded-none flex flex-col">

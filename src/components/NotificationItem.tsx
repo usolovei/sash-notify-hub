@@ -39,7 +39,9 @@ export const NotificationItem = ({
   const [isHovered, setIsHovered] = useState(false);
   
   const individualOpKey = `individual-${notification.id}`;
+  const detailOpKey = `detail-${notification.id}`;
   const hasPendingOperation = pendingOperations.has(individualOpKey);
+  const hasPendingDetailOperation = pendingOperations.has(detailOpKey);
 
   const isUnread = notification.status === "unread";
   const ModuleIcon = moduleIcons[notification.module];
@@ -75,8 +77,9 @@ export const NotificationItem = ({
   return (
     <div
       className={cn(
-        "px-4 py-3 flex items-start gap-3 transition-colors relative group cursor-pointer",
-        isUnread ? "bg-notification-unread" : "bg-background hover:bg-muted/30"
+        "px-4 py-3 flex items-start gap-3 transition-all relative group cursor-pointer",
+        isUnread ? "bg-notification-unread" : "bg-background hover:bg-muted/30",
+        hasPendingDetailOperation && "opacity-60"
       )}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
