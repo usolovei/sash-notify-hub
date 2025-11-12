@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { X, Search, CheckCircle2, Filter } from "lucide-react";
+import { X, Search, CheckCircle2, Filter, AtSign, UserCheck, ListTodo, HelpCircle, CheckSquare2, Pin } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
@@ -95,6 +95,7 @@ export const NotificationSidebar = ({
       Mentions: [],
       "Assigned to Me": [],
       "Task Updates": [],
+      Approval: [],
       Unanswered: [],
     };
 
@@ -233,7 +234,7 @@ export const NotificationSidebar = ({
           )}
 
           {/* Show unread groups */}
-          {["Mentions", "Assigned to Me", "Task Updates", "Unanswered"].map((groupName) => {
+          {["Mentions", "Assigned to Me", "Task Updates", "Approval", "Unanswered"].map((groupName) => {
             const groupNotifications = groupedNotifications[groupName];
             const unreadCount = groupNotifications?.filter(n => n.status === "unread").length || 0;
             

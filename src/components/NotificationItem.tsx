@@ -128,8 +128,13 @@ export const NotificationItem = ({
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 mb-1">
               <Badge 
-                variant={notification.priority === "high" ? "destructive" : notification.priority === "medium" ? "default" : "secondary"}
-                className="h-4 px-1.5 text-[10px] font-medium"
+                variant="outline"
+                className={cn(
+                  "h-4 px-1.5 text-[10px] font-medium border-0",
+                  notification.priority === "high" && "bg-red-100 text-red-700 dark:bg-red-950/30 dark:text-red-400",
+                  notification.priority === "medium" && "bg-yellow-100 text-yellow-700 dark:bg-yellow-950/30 dark:text-yellow-400",
+                  notification.priority === "low" && "bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400"
+                )}
               >
                 {notification.priority.toUpperCase()}
               </Badge>
