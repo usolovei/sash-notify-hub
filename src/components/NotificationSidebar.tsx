@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { X, Search, CheckCircle2, Circle } from "lucide-react";
+import { X, Search, CheckCircle2, Filter } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
@@ -9,8 +9,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Badge } from "@/components/ui/badge";
 import { Notification } from "@/data/notifications";
 import { NotificationGroup } from "./NotificationGroup";
+import { NotificationSettings } from "./NotificationSettings";
 
 interface PendingOperation {
   ids: number[];
@@ -50,6 +52,8 @@ export const NotificationSidebar = ({
 }: NotificationSidebarProps) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [moduleFilter, setModuleFilter] = useState("All Modules");
+  const [priorityFilter, setPriorityFilter] = useState("All Priorities");
+  const [dateFilter, setDateFilter] = useState("All Time");
 
   const filteredNotifications = useMemo(() => {
     return notifications.filter((notification) => {
@@ -61,9 +65,29 @@ export const NotificationSidebar = ({
       const matchesModule =
         moduleFilter === "All Modules" || notification.module === moduleFilter;
 
-      return matchesSearch && matchesModule;
+      const matchesPriority =
+        priorityFilter === "All Priorities" || notification.priority === priorityFilter.toLowerCase();
+
+      const matchesDate = (() => {
+        if (dateFilter === "All Time") return true;
+        const now = new Date();
+        const notificationDate = notification.createdAt;
+        
+        if (dateFilter === "Today") {
+          return notificationDate.toDateString() === now.toDateString();
+        } else if (dateFilter === "This Week") {
+          const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+          return notificationDate >= weekAgo;
+        } else if (dateFilter === "This Month") {
+          return notificationDate.getMonth() === now.getMonth() && 
+                 notificationDate.getFullYear() === now.getFullYear();
+        }
+        return true;
+      })();
+
+      return matchesSearch && matchesModule && matchesPriority && matchesDate;
     });
-  }, [notifications, searchQuery, moduleFilter]);
+  }, [notifications, searchQuery, moduleFilter, priorityFilter, dateFilter]);
 
   const groupedNotifications = useMemo(() => {
     const filtered = filteredNotifications.filter((n) => n.status === "unread" && !n.pinned);
@@ -82,15 +106,25 @@ export const NotificationSidebar = ({
       }
     });
 
+    // Sort by priority within each group (high > medium > low)
+    const priorityOrder = { high: 0, medium: 1, low: 2 };
+    Object.keys(groups).forEach((key) => {
+      groups[key].sort((a, b) => priorityOrder[a.priority] - priorityOrder[b.priority]);
+    });
+
     return groups;
   }, [filteredNotifications]);
 
   const pinnedNotifications = useMemo(() => {
-    return filteredNotifications.filter((n) => n.pinned);
+    const pinned = filteredNotifications.filter((n) => n.pinned);
+    const priorityOrder = { high: 0, medium: 1, low: 2 };
+    return pinned.sort((a, b) => priorityOrder[a.priority] - priorityOrder[b.priority]);
   }, [filteredNotifications]);
 
   const seenNotifications = useMemo(() => {
-    return filteredNotifications.filter((n) => n.status === "read" && !n.pinned);
+    const seen = filteredNotifications.filter((n) => n.status === "read" && !n.pinned);
+    const priorityOrder = { high: 0, medium: 1, low: 2 };
+    return seen.sort((a, b) => priorityOrder[a.priority] - priorityOrder[b.priority]);
   }, [filteredNotifications]);
 
   return (
@@ -118,22 +152,50 @@ export const NotificationSidebar = ({
               </div>
               Notifications
             </h2>
-            <Button variant="ghost" size="icon" onClick={onClose}>
-              <X className="h-5 w-5" />
-            </Button>
+            <div className="flex items-center gap-2">
+              <NotificationSettings />
+              <Button variant="ghost" size="icon" onClick={onClose}>
+                <X className="h-5 w-5" />
+              </Button>
+            </div>
+          </div>
+
+          {/* Search */}
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="Search Notifications"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-9"
+            />
           </div>
 
           {/* Filters */}
-          <div className="flex gap-2">
-            <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                placeholder="Search Notifications"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-9"
-              />
-            </div>
+          <div className="flex items-center gap-2">
+            <Filter className="h-4 w-4 text-muted-foreground" />
+            <Select value={dateFilter} onValueChange={setDateFilter}>
+              <SelectTrigger className="w-[120px]">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="All Time">All Time</SelectItem>
+                <SelectItem value="Today">Today</SelectItem>
+                <SelectItem value="This Week">This Week</SelectItem>
+                <SelectItem value="This Month">This Month</SelectItem>
+              </SelectContent>
+            </Select>
+            <Select value={priorityFilter} onValueChange={setPriorityFilter}>
+              <SelectTrigger className="w-[130px]">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="All Priorities">All Priorities</SelectItem>
+                <SelectItem value="High">High</SelectItem>
+                <SelectItem value="Medium">Medium</SelectItem>
+                <SelectItem value="Low">Low</SelectItem>
+              </SelectContent>
+            </Select>
             <Select value={moduleFilter} onValueChange={setModuleFilter}>
               <SelectTrigger className="w-[140px]">
                 <SelectValue />
