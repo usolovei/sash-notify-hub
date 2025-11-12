@@ -160,65 +160,59 @@ export const NotificationItem = ({
                 Undo
               </Button>
             ) : isPinned ? (
-              isHovered && (
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={handleUnpin}
-                  className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity"
-                  title="Unpin"
-                >
-                  <PinOff className="h-4 w-4 text-muted-foreground" />
-                </Button>
-              )
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={handleUnpin}
+                className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none group-hover:pointer-events-auto"
+                title="Unpin"
+              >
+                <PinOff className="h-4 w-4 text-muted-foreground" />
+              </Button>
             ) : (
               <>
                 {isUnread ? (
-                  isHovered && (
-                    <div className="flex gap-1">
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={handlePin}
-                        className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity"
-                        title="Pin"
-                      >
-                        <Pin className="h-4 w-4 text-muted-foreground" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={handleMarkAsRead}
-                        className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity"
-                        title="Mark as read"
-                      >
-                        <Circle className="h-4 w-4 text-muted-foreground" />
-                      </Button>
-                    </div>
-                  )
+                  <div className="flex gap-1">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={handlePin}
+                      className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none group-hover:pointer-events-auto"
+                      title="Pin"
+                    >
+                      <Pin className="h-4 w-4 text-muted-foreground" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={handleMarkAsRead}
+                      className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none group-hover:pointer-events-auto"
+                      title="Mark as read"
+                    >
+                      <Circle className="h-4 w-4 text-muted-foreground" />
+                    </Button>
+                  </div>
                 ) : (
-                  isHovered && (
-                    <div className="flex gap-1">
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={handlePin}
-                        className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity"
-                        title="Pin"
-                      >
-                        <Pin className="h-4 w-4 text-muted-foreground" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={handleMarkAsUnread}
-                        className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity"
-                        title="Mark as unread"
-                      >
-                        <CheckCircle2 className="h-4 w-4 text-muted-foreground" />
-                      </Button>
-                    </div>
-                  )
+                  <div className="flex gap-1">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={handlePin}
+                      className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none group-hover:pointer-events-auto"
+                      title="Pin"
+                    >
+                      <Pin className="h-4 w-4 text-muted-foreground" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={handleMarkAsUnread}
+                      className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none group-hover:pointer-events-auto"
+                      title="Mark as unread"
+                    >
+                      <CheckCircle2 className="h-4 w-4 text-muted-foreground" />
+                    </Button>
+                  </div>
                 )}
               </>
             )}
