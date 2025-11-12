@@ -33,16 +33,7 @@ export const NotificationGroup = ({
     : notifications.slice(0, 3);
 
   const handleMarkAsRead = () => {
-    // If expanded, mark all notifications as read
-    // If collapsed, mark only top 3 as read
-    const notificationsToMark = isExpanded ? notifications : notifications.slice(0, 3);
-    
-    notificationsToMark.forEach((notification) => {
-      if (notification.status === "unread") {
-        onMarkAsRead(notification.id);
-      }
-    });
-    
+    onMarkGroupAsRead(groupName);
     setShowUndo(true);
   };
 
