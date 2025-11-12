@@ -9,6 +9,7 @@ interface PendingOperation {
   timer: NodeJS.Timeout;
   type: 'individual' | 'group' | 'detail';
   group?: string;
+  originalStatus?: 'read' | 'unread';
 }
 
 const Index = () => {
@@ -33,14 +34,21 @@ const Index = () => {
       clearTimeout(existing.timer);
     }
 
+    // Store original status before changing
+    const notification = notifications.find(n => n.id === id);
+    const originalStatus = notification?.status || 'unread';
+
+    // Immediately mark as read (moves to Seen group)
+    setNotifications((prev) =>
+      prev.map((notification) =>
+        notification.id === id
+          ? { ...notification, status: "read" as const }
+          : notification
+      )
+    );
+
     const timer = setTimeout(() => {
-      setNotifications((prev) =>
-        prev.map((notification) =>
-          notification.id === id
-            ? { ...notification, status: "read" as const }
-            : notification
-        )
-      );
+      // After timer expires, just clean up the pending operation
       setPendingOperations((prev) => {
         const newMap = new Map(prev);
         newMap.delete(opKey);
@@ -51,7 +59,8 @@ const Index = () => {
     setPendingOperations((prev) => new Map(prev).set(opKey, {
       ids: [id],
       timer,
-      type: 'individual'
+      type: 'individual',
+      originalStatus
     }));
   };
 
@@ -59,6 +68,18 @@ const Index = () => {
     const operation = pendingOperations.get(key);
     if (operation) {
       clearTimeout(operation.timer);
+      
+      // Restore original status for the notifications
+      if (operation.originalStatus) {
+        setNotifications((prev) =>
+          prev.map((notification) =>
+            operation.ids.includes(notification.id)
+              ? { ...notification, status: operation.originalStatus }
+              : notification
+          )
+        );
+      }
+      
       setPendingOperations((prev) => {
         const newMap = new Map(prev);
         newMap.delete(key);
@@ -86,14 +107,17 @@ const Index = () => {
       clearTimeout(existing.timer);
     }
 
+    // Immediately mark all as read (moves to Seen group)
+    setNotifications((prev) =>
+      prev.map((notification) =>
+        ids.includes(notification.id)
+          ? { ...notification, status: "read" as const }
+          : notification
+      )
+    );
+
     const timer = setTimeout(() => {
-      setNotifications((prev) =>
-        prev.map((notification) =>
-          ids.includes(notification.id)
-            ? { ...notification, status: "read" as const }
-            : notification
-        )
-      );
+      // After timer expires, just clean up the pending operation
       setPendingOperations((prev) => {
         const newMap = new Map(prev);
         newMap.delete(opKey);
@@ -105,7 +129,8 @@ const Index = () => {
       ids,
       timer,
       type: 'group',
-      group
+      group,
+      originalStatus: 'unread'
     }));
   };
 
@@ -133,7 +158,7 @@ const Index = () => {
         )
       );
     } else if (notification.status === "unread") {
-      // For non-mention unread notifications, add delay before marking as read
+      // For non-mention unread notifications, immediately mark as read
       const opKey = `detail-${notification.id}`;
       
       // Cancel any existing operation for this notification
@@ -142,14 +167,17 @@ const Index = () => {
         clearTimeout(existing.timer);
       }
 
+      // Immediately mark as read (moves to Seen group)
+      setNotifications((prev) =>
+        prev.map((n) =>
+          n.id === notification.id
+            ? { ...n, status: "read" as const }
+            : n
+        )
+      );
+
       const timer = setTimeout(() => {
-        setNotifications((prev) =>
-          prev.map((n) =>
-            n.id === notification.id
-              ? { ...n, status: "read" as const }
-              : n
-          )
-        );
+        // After timer expires, just clean up the pending operation
         setPendingOperations((prev) => {
           const newMap = new Map(prev);
           newMap.delete(opKey);
@@ -160,7 +188,8 @@ const Index = () => {
       setPendingOperations((prev) => new Map(prev).set(opKey, {
         ids: [notification.id],
         timer,
-        type: 'detail'
+        type: 'detail',
+        originalStatus: 'unread'
       }));
     }
   };
