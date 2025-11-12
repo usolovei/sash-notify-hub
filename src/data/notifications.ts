@@ -9,6 +9,8 @@ export interface Notification {
   viewed?: boolean;
   originalGroup?: "Mentions" | "Assigned to Me" | "Task Updates";
   pinned?: boolean;
+  priority: "high" | "medium" | "low";
+  createdAt: Date;
 }
 
 export const notificationsData: Notification[] = [
@@ -20,7 +22,9 @@ export const notificationsData: Notification[] = [
     status: "unread",
     name: "Alia Tarek",
     description: "mentioned you in 'Q4 Budget Planning'",
-    timestamp: "2m ago"
+    timestamp: "2m ago",
+    priority: "high",
+    createdAt: new Date(Date.now() - 2 * 60 * 1000)
   },
   {
     id: 2,
@@ -29,7 +33,9 @@ export const notificationsData: Notification[] = [
     status: "unread",
     name: "John Smith",
     description: "tagged you on Lead 'TechCorp'",
-    timestamp: "15m ago"
+    timestamp: "15m ago",
+    priority: "medium",
+    createdAt: new Date(Date.now() - 15 * 60 * 1000)
   },
   {
     id: 3,
@@ -38,7 +44,9 @@ export const notificationsData: Notification[] = [
     status: "unread",
     name: "Sarah Connor",
     description: "mentioned you in 'Marketing Campaign Review'",
-    timestamp: "1h ago"
+    timestamp: "1h ago",
+    priority: "high",
+    createdAt: new Date(Date.now() - 60 * 60 * 1000)
   },
   {
     id: 4,
@@ -47,7 +55,9 @@ export const notificationsData: Notification[] = [
     status: "unread",
     name: "Mike Chen",
     description: "tagged you in article 'API Documentation Updates'",
-    timestamp: "2h ago"
+    timestamp: "2h ago",
+    priority: "low",
+    createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000)
   },
   {
     id: 5,
@@ -56,7 +66,9 @@ export const notificationsData: Notification[] = [
     status: "unread",
     name: "Emma Wilson",
     description: "mentioned you in ticket discussion #445",
-    timestamp: "3h ago"
+    timestamp: "3h ago",
+    priority: "medium",
+    createdAt: new Date(Date.now() - 3 * 60 * 60 * 1000)
   },
   
   // Assigned to Me (5)
@@ -67,7 +79,9 @@ export const notificationsData: Notification[] = [
     status: "unread",
     name: "Project Bot",
     description: "New task 'Draft newsletter copy'",
-    timestamp: "22m ago"
+    timestamp: "22m ago",
+    priority: "high",
+    createdAt: new Date(Date.now() - 22 * 60 * 1000)
   },
   {
     id: 7,
@@ -76,7 +90,9 @@ export const notificationsData: Notification[] = [
     status: "unread",
     name: "Salesforce Sync",
     description: "New opportunity 'Globex Inc.' assigned",
-    timestamp: "45m ago"
+    timestamp: "45m ago",
+    priority: "medium",
+    createdAt: new Date(Date.now() - 45 * 60 * 1000)
   },
   {
     id: 8,
@@ -85,7 +101,9 @@ export const notificationsData: Notification[] = [
     status: "unread",
     name: "Support System",
     description: "Ticket #882-A assigned to you",
-    timestamp: "1h ago"
+    timestamp: "1h ago",
+    priority: "high",
+    createdAt: new Date(Date.now() - 60 * 60 * 1000)
   },
   {
     id: 9,
@@ -94,7 +112,9 @@ export const notificationsData: Notification[] = [
     status: "unread",
     name: "Project Bot",
     description: "Task 'Finalize slide deck' assigned",
-    timestamp: "2h ago"
+    timestamp: "2h ago",
+    priority: "low",
+    createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000)
   },
   {
     id: 10,
@@ -103,7 +123,9 @@ export const notificationsData: Notification[] = [
     status: "unread",
     name: "Salesforce Sync",
     description: "Lead 'Acme Corp' requires follow-up",
-    timestamp: "4h ago"
+    timestamp: "4h ago",
+    priority: "medium",
+    createdAt: new Date(Date.now() - 4 * 60 * 60 * 1000)
   },
   
   // Task Updates (5)
@@ -114,7 +136,9 @@ export const notificationsData: Notification[] = [
     status: "unread",
     name: "Mike Johnson",
     description: "completed 'User Research Synthesis'",
-    timestamp: "5m ago"
+    timestamp: "5m ago",
+    priority: "low",
+    createdAt: new Date(Date.now() - 5 * 60 * 1000)
   },
   {
     id: 12,
@@ -123,7 +147,9 @@ export const notificationsData: Notification[] = [
     status: "unread",
     name: "Content Bot",
     description: "New article 'API V2 Guide' published",
-    timestamp: "30m ago"
+    timestamp: "30m ago",
+    priority: "medium",
+    createdAt: new Date(Date.now() - 30 * 60 * 1000)
   },
   {
     id: 13,
@@ -132,7 +158,9 @@ export const notificationsData: Notification[] = [
     status: "unread",
     name: "Lisa Anderson",
     description: "updated status on 'Website Redesign'",
-    timestamp: "1h ago"
+    timestamp: "1h ago",
+    priority: "high",
+    createdAt: new Date(Date.now() - 60 * 60 * 1000)
   },
   {
     id: 14,
@@ -141,7 +169,9 @@ export const notificationsData: Notification[] = [
     status: "unread",
     name: "Jane Doe",
     description: "commented on Ticket #880-C",
-    timestamp: "2h ago"
+    timestamp: "2h ago",
+    priority: "low",
+    createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000)
   },
   {
     id: 15,
@@ -150,7 +180,9 @@ export const notificationsData: Notification[] = [
     status: "unread",
     name: "Tom Bradley",
     description: "moved 'Sprint Planning' to In Progress",
-    timestamp: "5h ago"
+    timestamp: "5h ago",
+    priority: "medium",
+    createdAt: new Date(Date.now() - 5 * 60 * 60 * 1000)
   },
   
   // Some already read (for Seen group)
@@ -161,7 +193,9 @@ export const notificationsData: Notification[] = [
     status: "read",
     name: "Alex Murphy",
     description: "completed 'Database Migration'",
-    timestamp: "1d ago"
+    timestamp: "1d ago",
+    priority: "high",
+    createdAt: new Date(Date.now() - 24 * 60 * 60 * 1000)
   },
   {
     id: 17,
@@ -170,6 +204,8 @@ export const notificationsData: Notification[] = [
     status: "read",
     name: "Project Bot",
     description: "Task 'Review wireframes' assigned",
-    timestamp: "1d ago"
+    timestamp: "1d ago",
+    priority: "medium",
+    createdAt: new Date(Date.now() - 24 * 60 * 60 * 1000)
   },
 ];

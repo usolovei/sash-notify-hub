@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Circle, CheckCircle2, CheckSquare, Users, Headphones, Book, Undo2, Pin, PinOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
 import { Notification } from "@/data/notifications";
 import { cn } from "@/lib/utils";
 import { UndoTimer } from "./UndoTimer";
@@ -125,6 +126,14 @@ export const NotificationItem = ({
       <div className="flex-1 min-w-0">
         <div className="flex items-start justify-between gap-2">
           <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-2 mb-1">
+              <Badge 
+                variant={notification.priority === "high" ? "destructive" : notification.priority === "medium" ? "default" : "secondary"}
+                className="h-4 px-1.5 text-[10px] font-medium"
+              >
+                {notification.priority.toUpperCase()}
+              </Badge>
+            </div>
             <p className="text-sm">
               <span className="font-medium">{notification.name}</span>{" "}
               <span className="text-muted-foreground">{notification.description}</span>
