@@ -19,7 +19,6 @@ interface PendingOperation {
   timer: NodeJS.Timeout;
   type: 'individual' | 'group' | 'detail';
   group?: string;
-  originalGroup?: string;
 }
 
 interface NotificationSidebarProps {
@@ -91,6 +90,7 @@ export const NotificationSidebar = ({
   }, [notifications, searchQuery, moduleFilter, priorityFilter, dateFilter]);
 
   const groupedNotifications = useMemo(() => {
+    const filtered = filteredNotifications.filter((n) => n.status === "unread" && !n.pinned);
     const groups: Record<string, Notification[]> = {
       Mentions: [],
       "Assigned to Me": [],
@@ -98,34 +98,11 @@ export const NotificationSidebar = ({
       Unanswered: [],
     };
 
-    filteredNotifications.forEach((notification) => {
-      if (notification.pinned) return;
-      
-      // Check if this notification has a pending operation
-      const hasPendingOp = Array.from(pendingOperations.values()).some(op => 
-        op.ids.includes(notification.id)
-      );
-      
-      // If it has a pending operation, show it in its original group
-      if (hasPendingOp) {
-        const pendingOp = Array.from(pendingOperations.values()).find(op => 
-          op.ids.includes(notification.id)
-        );
-        const originalGroup = pendingOp?.originalGroup;
-        
-        if (originalGroup && groups[originalGroup] !== undefined) {
-          groups[originalGroup].push(notification);
-        }
-        return;
-      }
-      
-      // Otherwise use normal grouping logic
-      if (notification.status === "unread") {
-        if (notification.group === "Unanswered" || (notification.originalGroup === "Mentions" && notification.viewed && notification.status === "unread")) {
-          groups.Unanswered.push(notification);
-        } else {
-          groups[notification.group].push(notification);
-        }
+    filtered.forEach((notification) => {
+      if (notification.group === "Unanswered" || (notification.originalGroup === "Mentions" && notification.viewed && notification.status === "unread")) {
+        groups.Unanswered.push(notification);
+      } else {
+        groups[notification.group].push(notification);
       }
     });
 
@@ -136,7 +113,7 @@ export const NotificationSidebar = ({
     });
 
     return groups;
-  }, [filteredNotifications, pendingOperations]);
+  }, [filteredNotifications]);
 
   const pinnedNotifications = useMemo(() => {
     const pinned = filteredNotifications.filter((n) => n.pinned);
@@ -145,20 +122,10 @@ export const NotificationSidebar = ({
   }, [filteredNotifications]);
 
   const seenNotifications = useMemo(() => {
-    // Filter out notifications with pending operations (they should stay in original group)
-    const seen = filteredNotifications.filter((n) => {
-      if (n.status !== "read" || n.pinned) return false;
-      
-      const hasPendingOp = Array.from(pendingOperations.values()).some(op => 
-        op.ids.includes(n.id)
-      );
-      
-      return !hasPendingOp;
-    });
-    
+    const seen = filteredNotifications.filter((n) => n.status === "read" && !n.pinned);
     const priorityOrder = { high: 0, medium: 1, low: 2 };
     return seen.sort((a, b) => priorityOrder[a.priority] - priorityOrder[b.priority]);
-  }, [filteredNotifications, pendingOperations]);
+  }, [filteredNotifications]);
 
   return (
     <>
