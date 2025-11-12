@@ -10,6 +10,7 @@ interface PendingOperation {
   type: 'individual' | 'group' | 'detail';
   group?: string;
   originalStatus?: 'read' | 'unread';
+  originalGroup?: string;
 }
 
 const Index = () => {
@@ -34,9 +35,10 @@ const Index = () => {
       clearTimeout(existing.timer);
     }
 
-    // Store original status before changing
+    // Store original status and group before changing
     const notification = notifications.find(n => n.id === id);
     const originalStatus = notification?.status || 'unread';
+    const originalGroup = notification?.group;
 
     // Immediately mark as read (moves to Seen group)
     setNotifications((prev) =>
@@ -60,7 +62,8 @@ const Index = () => {
       ids: [id],
       timer,
       type: 'individual',
-      originalStatus
+      originalStatus,
+      originalGroup
     }));
   };
 
@@ -130,7 +133,8 @@ const Index = () => {
       timer,
       type: 'group',
       group,
-      originalStatus: 'unread'
+      originalStatus: 'unread',
+      originalGroup: group
     }));
   };
 
@@ -189,7 +193,8 @@ const Index = () => {
         ids: [notification.id],
         timer,
         type: 'detail',
-        originalStatus: 'unread'
+        originalStatus: 'unread',
+        originalGroup: notification.group
       }));
     }
   };
