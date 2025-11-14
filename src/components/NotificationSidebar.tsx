@@ -12,6 +12,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Notification } from "@/data/notifications";
 import { NotificationGroup } from "./NotificationGroup";
+import { NotificationItem } from "./NotificationItem";
 import { NotificationSettings } from "./NotificationSettings";
 import { UndoTimer } from "./UndoTimer";
 
@@ -33,6 +34,8 @@ interface NotificationSidebarProps {
   onUndo: () => void;
   onPin: (id: number) => void;
   onUnpin: (id: number) => void;
+  showPlainView: boolean;
+  onShowPlainViewChange: (value: boolean) => void;
 }
 
 export const NotificationSidebar = ({
@@ -47,6 +50,8 @@ export const NotificationSidebar = ({
   onUndo,
   onPin,
   onUnpin,
+  showPlainView,
+  onShowPlainViewChange,
 }: NotificationSidebarProps) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [moduleFilter, setModuleFilter] = useState("All Modules");
@@ -129,6 +134,12 @@ export const NotificationSidebar = ({
     return seen.sort((a, b) => priorityOrder[a.priority] - priorityOrder[b.priority]);
   }, [filteredNotifications]);
 
+  const plainViewNotifications = useMemo(() => {
+    if (!showPlainView) return [];
+    const priorityOrder = { high: 0, medium: 1, low: 2 };
+    return [...filteredNotifications].sort((a, b) => priorityOrder[a.priority] - priorityOrder[b.priority]);
+  }, [filteredNotifications, showPlainView]);
+
   return (
     <>
       {/* Backdrop */}
@@ -155,7 +166,10 @@ export const NotificationSidebar = ({
               Notifications
             </h2>
             <div className="flex items-center gap-2">
-              <NotificationSettings />
+              <NotificationSettings 
+                showPlainView={showPlainView}
+                onShowPlainViewChange={onShowPlainViewChange}
+              />
               <Button variant="ghost" size="icon" onClick={onClose}>
                 <X className="h-5 w-5" />
               </Button>
@@ -215,59 +229,85 @@ export const NotificationSidebar = ({
 
         {/* Notification Groups */}
         <div className="flex-1 overflow-y-auto">
-          {/* Show Pinned group first */}
-          {pinnedNotifications.length > 0 && (
-            <NotificationGroup
-              key="Pinned"
-              groupName="Pinned"
-              notifications={pinnedNotifications}
-              unreadCount={0}
-              onMarkAsRead={onMarkAsRead}
-              onMarkAsUnread={onMarkAsUnread}
-              onMarkGroupAsRead={onMarkGroupAsRead}
-              onNotificationClick={onNotificationClick}
-              onPin={onPin}
-              onUnpin={onUnpin}
-            />
-          )}
+          {showPlainView ? (
+            /* Plain View - Flat list sorted by priority */
+            <div className="divide-y">
+              {plainViewNotifications.map((notification) => (
+                <NotificationItem
+                  key={notification.id}
+                  notification={notification}
+                  onMarkAsRead={onMarkAsRead}
+                  onMarkAsUnread={onMarkAsUnread}
+                  onNotificationClick={onNotificationClick}
+                  onPin={onPin}
+                  onUnpin={onUnpin}
+                  isPinned={notification.pinned || false}
+                />
+              ))}
+              {plainViewNotifications.length === 0 && (
+                <div className="p-8 text-center text-muted-foreground">
+                  No notifications found
+                </div>
+              )}
+            </div>
+          ) : (
+            /* Grouped View */
+            <>
+              {/* Show Pinned group first */}
+              {pinnedNotifications.length > 0 && (
+                <NotificationGroup
+                  key="Pinned"
+                  groupName="Pinned"
+                  notifications={pinnedNotifications}
+                  unreadCount={0}
+                  onMarkAsRead={onMarkAsRead}
+                  onMarkAsUnread={onMarkAsUnread}
+                  onMarkGroupAsRead={onMarkGroupAsRead}
+                  onNotificationClick={onNotificationClick}
+                  onPin={onPin}
+                  onUnpin={onUnpin}
+                />
+              )}
 
-          {/* Show unread groups */}
-          {["Approval", "Mentions", "Assigned to Me", "Task Updates", "Unanswered"].map((groupName) => {
-            const groupNotifications = groupedNotifications[groupName];
-            const unreadCount = groupNotifications?.filter(n => n.status === "unread").length || 0;
-            
-            if (!groupNotifications || groupNotifications.length === 0) return null;
+              {/* Show unread groups */}
+              {["Approval", "Mentions", "Assigned to Me", "Task Updates", "Unanswered"].map((groupName) => {
+                const groupNotifications = groupedNotifications[groupName];
+                const unreadCount = groupNotifications?.filter(n => n.status === "unread").length || 0;
+                
+                if (!groupNotifications || groupNotifications.length === 0) return null;
 
-            return (
-              <NotificationGroup
-                key={groupName}
-                groupName={groupName}
-                notifications={groupNotifications}
-                unreadCount={unreadCount}
-                onMarkAsRead={onMarkAsRead}
-                onMarkAsUnread={onMarkAsUnread}
-                onMarkGroupAsRead={onMarkGroupAsRead}
-                onNotificationClick={onNotificationClick}
-                onPin={onPin}
-                onUnpin={onUnpin}
-              />
-            );
-          })}
-          
-          {/* Show Seen group at the bottom */}
-          {seenNotifications.length > 0 && (
-            <NotificationGroup
-              key="Seen"
-              groupName="Seen"
-              notifications={seenNotifications}
-              unreadCount={0}
-              onMarkAsRead={onMarkAsRead}
-              onMarkAsUnread={onMarkAsUnread}
-              onMarkGroupAsRead={onMarkGroupAsRead}
-              onNotificationClick={onNotificationClick}
-              onPin={onPin}
-              onUnpin={onUnpin}
-            />
+                return (
+                  <NotificationGroup
+                    key={groupName}
+                    groupName={groupName}
+                    notifications={groupNotifications}
+                    unreadCount={unreadCount}
+                    onMarkAsRead={onMarkAsRead}
+                    onMarkAsUnread={onMarkAsUnread}
+                    onMarkGroupAsRead={onMarkGroupAsRead}
+                    onNotificationClick={onNotificationClick}
+                    onPin={onPin}
+                    onUnpin={onUnpin}
+                  />
+                );
+              })}
+              
+              {/* Show Seen group at the bottom */}
+              {seenNotifications.length > 0 && (
+                <NotificationGroup
+                  key="Seen"
+                  groupName="Seen"
+                  notifications={seenNotifications}
+                  unreadCount={0}
+                  onMarkAsRead={onMarkAsRead}
+                  onMarkAsUnread={onMarkAsUnread}
+                  onMarkGroupAsRead={onMarkGroupAsRead}
+                  onNotificationClick={onNotificationClick}
+                  onPin={onPin}
+                  onUnpin={onUnpin}
+                />
+              )}
+            </>
           )}
         </div>
 
