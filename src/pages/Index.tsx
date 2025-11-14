@@ -107,22 +107,8 @@ const Index = () => {
     setSelectedNotification(notification);
     setIsDetailOpen(true);
 
-    // If it's a Mention, move to Unanswered (stays unread)
-    if (notification.group === "Mentions" || notification.originalGroup === "Mentions") {
-      setNotifications((prev) =>
-        prev.map((n) =>
-          n.id === notification.id
-            ? {
-                ...n,
-                viewed: true,
-                originalGroup: "Mentions" as const,
-                group: "Unanswered" as const,
-              }
-            : n
-        )
-      );
-    } else if (notification.status === "unread") {
-      // For non-mention unread notifications, immediately mark as read
+    // Mark as read if unread
+    if (notification.status === "unread") {
       setNotifications((prev) =>
         prev.map((n) =>
           n.id === notification.id

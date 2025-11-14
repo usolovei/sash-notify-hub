@@ -102,15 +102,10 @@ export const NotificationSidebar = ({
       "Assigned to Me": [],
       "Task Updates": [],
       Approval: [],
-      Unanswered: [],
     };
 
     filtered.forEach((notification) => {
-      if (notification.group === "Unanswered" || (notification.originalGroup === "Mentions" && notification.viewed && notification.status === "unread")) {
-        groups.Unanswered.push(notification);
-      } else {
-        groups[notification.group].push(notification);
-      }
+      groups[notification.group].push(notification);
     });
 
     // Sort by priority within each group (high > medium > low)
@@ -270,7 +265,7 @@ export const NotificationSidebar = ({
               )}
 
               {/* Show unread groups */}
-              {["Approval", "Mentions", "Assigned to Me", "Task Updates", "Unanswered"].map((groupName) => {
+              {["Approval", "Mentions", "Assigned to Me", "Task Updates"].map((groupName) => {
                 const groupNotifications = groupedNotifications[groupName];
                 const unreadCount = groupNotifications?.filter(n => n.status === "unread").length || 0;
                 

@@ -44,7 +44,7 @@ export const NotificationDetail = ({
     }
   };
 
-  const isFromMentions = notification.originalGroup === "Mentions" || notification.group === "Mentions" || notification.group === "Unanswered";
+  const isFromMentions = notification.group === "Mentions";
 
   return (
     <>
