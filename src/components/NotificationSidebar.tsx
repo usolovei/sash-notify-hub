@@ -68,6 +68,7 @@ export const NotificationSidebar = ({
   const [moduleFilter, setModuleFilter] = useState("All Modules");
   const [priorityFilter, setPriorityFilter] = useState("All Priorities");
   const [dateFilter, setDateFilter] = useState("All Time");
+  const [isSearchExpanded, setIsSearchExpanded] = useState(false);
 
   const filteredNotifications = useMemo(() => {
     return notifications.filter((notification) => {
@@ -185,82 +186,98 @@ export const NotificationSidebar = ({
             </div>
           </div>
 
-          {/* Search */}
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="Search Notifications"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-9"
-            />
-          </div>
-
-          {/* Filters and Hide Seen Toggle */}
-          <div className="flex items-center justify-between gap-2">
-            <div className="flex items-center gap-2">
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button variant="outline" size="icon">
-                    <Filter className="h-4 w-4" />
+          {/* Search and Filters Row */}
+          <div className="space-y-2">
+            {isSearchExpanded ? (
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  placeholder="Search Notifications"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onBlur={() => {
+                    if (!searchQuery) {
+                      setIsSearchExpanded(false);
+                    }
+                  }}
+                  className="pl-9"
+                  autoFocus
+                />
+              </div>
+            ) : (
+              <div className="flex items-center justify-between gap-2">
+                <div className="flex items-center gap-2">
+                  <Button 
+                    variant="outline" 
+                    size="icon"
+                    onClick={() => setIsSearchExpanded(true)}
+                  >
+                    <Search className="h-4 w-4" />
                   </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-80" align="start">
-                  <div className="space-y-4">
-                    <div className="space-y-2">
-                      <Label className="text-sm font-medium">Date</Label>
-                      <Select value={dateFilter} onValueChange={setDateFilter}>
-                        <SelectTrigger>
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="All Time">All Time</SelectItem>
-                          <SelectItem value="Today">Today</SelectItem>
-                          <SelectItem value="This Week">This Week</SelectItem>
-                          <SelectItem value="This Month">This Month</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div className="space-y-2">
-                      <Label className="text-sm font-medium">Priority</Label>
-                      <Select value={priorityFilter} onValueChange={setPriorityFilter}>
-                        <SelectTrigger>
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="All Priorities">All Priorities</SelectItem>
-                          <SelectItem value="Need high attention">Need high attention</SelectItem>
-                          <SelectItem value="Moderate priority">Moderate priority</SelectItem>
-                          <SelectItem value="Low">Low</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </div>
-                </PopoverContent>
-              </Popover>
-              <Select value={moduleFilter} onValueChange={setModuleFilter}>
-                <SelectTrigger className="w-[180px]">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="All Modules">All Modules</SelectItem>
-                  <SelectItem value="Tasks">Tasks</SelectItem>
-                  <SelectItem value="CRM Requests">CRM Requests</SelectItem>
-                  <SelectItem value="Care Service">Care Service</SelectItem>
-                  <SelectItem value="Knowledge Base">Knowledge Base</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="flex items-center gap-2">
-              <Label htmlFor="hide-seen" className="text-sm cursor-pointer">
-                Hide seen
-              </Label>
-              <Switch
-                id="hide-seen"
-                checked={hideSeen}
-                onCheckedChange={onHideSeenChange}
-              />
-            </div>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button variant="outline" size="icon">
+                        <Filter className="h-4 w-4" />
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-80" align="start">
+                      <div className="space-y-4">
+                        <div className="space-y-2">
+                          <Label className="text-sm font-medium">Date</Label>
+                          <Select value={dateFilter} onValueChange={setDateFilter}>
+                            <SelectTrigger>
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="All Time">All Time</SelectItem>
+                              <SelectItem value="Today">Today</SelectItem>
+                              <SelectItem value="This Week">This Week</SelectItem>
+                              <SelectItem value="This Month">This Month</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div className="space-y-2">
+                          <Label className="text-sm font-medium">Priority</Label>
+                          <Select value={priorityFilter} onValueChange={setPriorityFilter}>
+                            <SelectTrigger>
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="All Priorities">All Priorities</SelectItem>
+                              <SelectItem value="Need high attention">Need high attention</SelectItem>
+                              <SelectItem value="Moderate priority">Moderate priority</SelectItem>
+                              <SelectItem value="Low">Low</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      </div>
+                    </PopoverContent>
+                  </Popover>
+                  <Select value={moduleFilter} onValueChange={setModuleFilter}>
+                    <SelectTrigger className="w-[180px]">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="All Modules">All Modules</SelectItem>
+                      <SelectItem value="Tasks">Tasks</SelectItem>
+                      <SelectItem value="CRM Requests">CRM Requests</SelectItem>
+                      <SelectItem value="Care Service">Care Service</SelectItem>
+                      <SelectItem value="Knowledge Base">Knowledge Base</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Label htmlFor="hide-seen" className="text-sm cursor-pointer">
+                    Hide seen
+                  </Label>
+                  <Switch
+                    id="hide-seen"
+                    checked={hideSeen}
+                    onCheckedChange={onHideSeenChange}
+                  />
+                </div>
+              </div>
+            )}
           </div>
         </div>
 
