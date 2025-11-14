@@ -1,13 +1,11 @@
 export interface Notification {
   id: number;
-  group: "Mentions" | "Assigned to Me" | "Task Updates" | "Unanswered" | "Approval";
+  group: "Mentions" | "Assigned to Me" | "Task Updates" | "Approval";
   module: "Tasks" | "CRM Requests" | "Care Service" | "Knowledge Base";
   status: "read" | "unread";
   name: string;
   description: string;
   timestamp: string;
-  viewed?: boolean;
-  originalGroup?: "Mentions" | "Assigned to Me" | "Task Updates" | "Approval";
   pinned?: boolean;
   priority: "high" | "medium" | "low";
   createdAt: Date;
