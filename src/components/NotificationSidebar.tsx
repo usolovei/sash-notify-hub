@@ -235,24 +235,21 @@ export const NotificationSidebar = ({
                         </SelectContent>
                       </Select>
                     </div>
-                    <div className="space-y-2">
-                      <Label className="text-sm font-medium">Module</Label>
-                      <Select value={moduleFilter} onValueChange={setModuleFilter}>
-                        <SelectTrigger>
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="All Modules">All Modules</SelectItem>
-                          <SelectItem value="Tasks">Tasks</SelectItem>
-                          <SelectItem value="CRM Requests">CRM Requests</SelectItem>
-                          <SelectItem value="Care Service">Care Service</SelectItem>
-                          <SelectItem value="Knowledge Base">Knowledge Base</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
                   </div>
                 </PopoverContent>
               </Popover>
+              <Select value={moduleFilter} onValueChange={setModuleFilter}>
+                <SelectTrigger className="w-[180px]">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="All Modules">All Modules</SelectItem>
+                  <SelectItem value="Tasks">Tasks</SelectItem>
+                  <SelectItem value="CRM Requests">CRM Requests</SelectItem>
+                  <SelectItem value="Care Service">Care Service</SelectItem>
+                  <SelectItem value="Knowledge Base">Knowledge Base</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
             <div className="flex items-center gap-2">
               <Label htmlFor="hide-seen" className="text-sm cursor-pointer">
