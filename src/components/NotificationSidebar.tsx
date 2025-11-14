@@ -168,19 +168,14 @@ export const NotificationSidebar = ({
         }`}
       >
         {/* Header */}
-        <div className="border-b p-4 space-y-4">
+        <div className="border-b p-4 space-y-3">
+          {/* Title Row */}
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2">
               <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
                 <CheckCircle2 className="h-4 w-4 text-primary" />
               </div>
               <h2 className="text-lg font-semibold">Notifications</h2>
-              <Tabs value={showPlainView ? "plain" : "smart"} onValueChange={(value) => onShowPlainViewChange(value === "plain")}>
-                <TabsList className="h-8">
-                  <TabsTrigger value="smart" className="text-xs px-3">Smart View</TabsTrigger>
-                  <TabsTrigger value="plain" className="text-xs px-3">Plain View</TabsTrigger>
-                </TabsList>
-              </Tabs>
             </div>
             <div className="flex items-center gap-2">
               <NotificationSettings />
@@ -190,41 +185,63 @@ export const NotificationSidebar = ({
             </div>
           </div>
 
-          {/* Search and Filters Row */}
-          <div className="space-y-2">
-            {isSearchExpanded ? (
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
-                  placeholder="Search Notifications"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  onBlur={() => {
-                    if (!searchQuery) {
-                      setIsSearchExpanded(false);
-                    }
-                  }}
-                  className="pl-9"
-                  autoFocus
-                />
-              </div>
-            ) : (
-              <div className="flex items-center justify-between gap-2">
-                <div className="flex items-center gap-2">
+          {/* Controls Row */}
+          <div className="flex items-center justify-between gap-3">
+            {/* Left: View Tabs */}
+            <Tabs value={showPlainView ? "plain" : "smart"} onValueChange={(value) => onShowPlainViewChange(value === "plain")}>
+              <TabsList className="h-8">
+                <TabsTrigger value="smart" className="text-xs px-3">Smart</TabsTrigger>
+                <TabsTrigger value="plain" className="text-xs px-3">Plain</TabsTrigger>
+              </TabsList>
+            </Tabs>
+
+            {/* Right: Search, Filters, and Toggle */}
+            <div className="flex items-center gap-2 flex-1 justify-end">
+              {isSearchExpanded ? (
+                <div className="relative flex-1 max-w-xs">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    placeholder="Search notifications..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onBlur={() => {
+                      if (!searchQuery) {
+                        setIsSearchExpanded(false);
+                      }
+                    }}
+                    className="pl-9 h-8"
+                    autoFocus
+                  />
+                </div>
+              ) : (
+                <>
                   <Button 
-                    variant="outline" 
+                    variant="ghost" 
                     size="icon"
                     onClick={() => setIsSearchExpanded(true)}
+                    className="h-8 w-8"
                   >
                     <Search className="h-4 w-4" />
                   </Button>
+                  <Select value={moduleFilter} onValueChange={setModuleFilter}>
+                    <SelectTrigger className="w-[140px] h-8">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="All Modules">All Modules</SelectItem>
+                      <SelectItem value="Tasks">Tasks</SelectItem>
+                      <SelectItem value="CRM Requests">CRM Requests</SelectItem>
+                      <SelectItem value="Care Service">Care Service</SelectItem>
+                      <SelectItem value="Knowledge Base">Knowledge Base</SelectItem>
+                    </SelectContent>
+                  </Select>
                   <Popover>
                     <PopoverTrigger asChild>
-                      <Button variant="outline" size="icon">
+                      <Button variant="ghost" size="icon" className="h-8 w-8">
                         <Filter className="h-4 w-4" />
                       </Button>
                     </PopoverTrigger>
-                    <PopoverContent className="w-80" align="start">
+                    <PopoverContent className="w-80" align="end">
                       <div className="space-y-4">
                         <div className="space-y-2">
                           <Label className="text-sm font-medium">Date</Label>
@@ -257,31 +274,19 @@ export const NotificationSidebar = ({
                       </div>
                     </PopoverContent>
                   </Popover>
-                  <Select value={moduleFilter} onValueChange={setModuleFilter}>
-                    <SelectTrigger className="w-[180px]">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="All Modules">All Modules</SelectItem>
-                      <SelectItem value="Tasks">Tasks</SelectItem>
-                      <SelectItem value="CRM Requests">CRM Requests</SelectItem>
-                      <SelectItem value="Care Service">Care Service</SelectItem>
-                      <SelectItem value="Knowledge Base">Knowledge Base</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Label htmlFor="hide-seen" className="text-sm cursor-pointer">
-                    Hide seen
-                  </Label>
-                  <Switch
-                    id="hide-seen"
-                    checked={hideSeen}
-                    onCheckedChange={onHideSeenChange}
-                  />
-                </div>
-              </div>
-            )}
+                  <div className="flex items-center gap-2 pl-2 border-l">
+                    <Label htmlFor="hide-seen" className="text-xs cursor-pointer whitespace-nowrap">
+                      Hide seen
+                    </Label>
+                    <Switch
+                      id="hide-seen"
+                      checked={hideSeen}
+                      onCheckedChange={onHideSeenChange}
+                    />
+                  </div>
+                </>
+              )}
+            </div>
           </div>
         </div>
 
