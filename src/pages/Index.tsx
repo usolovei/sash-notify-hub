@@ -16,6 +16,7 @@ const Index = () => {
   const [selectedNotification, setSelectedNotification] = useState<Notification | null>(null);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [lastOperation, setLastOperation] = useState<LastOperation | null>(null);
+  const [showPlainView, setShowPlainView] = useState(false);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
   const unreadCount = useMemo(() => {
@@ -209,6 +210,8 @@ const Index = () => {
         onUndo={handleUndo}
         onPin={handlePin}
         onUnpin={handleUnpin}
+        showPlainView={showPlainView}
+        onShowPlainViewChange={setShowPlainView}
       />
 
       <NotificationDetail
