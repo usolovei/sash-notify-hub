@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { NotificationItem } from "./NotificationItem";
 import { Notification } from "@/data/notifications";
 import { Check, AtSign, UserCheck, ListTodo, HelpCircle, CheckSquare2, Pin, Eye } from "lucide-react";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 const groupIcons = {
   "Mentions": AtSign,
@@ -12,6 +13,14 @@ const groupIcons = {
   "Unanswered": HelpCircle,
   "Pinned": Pin,
   "Seen": Eye,
+};
+
+const groupTooltips: Record<string, string> = {
+  "Approval": "These tasks need your approval",
+  "Mentions": "Someone mentioned you in the comments",
+  "Assigned to Me": "Someone assigned you to a task",
+  "Task Updates": "Someone updated a stage in a task related to you",
+  "Seen": "You've already seen this notification",
 };
 
 interface NotificationGroupProps {
@@ -75,12 +84,23 @@ export const NotificationGroup = ({
     <div className="border-b last:border-b-0">
       <div className="px-4 py-3 bg-muted/30">
         <div className="flex items-center justify-between gap-2">
-          <div className="flex items-center gap-2">
-            {GroupIcon && <GroupIcon className="h-4 w-4 text-muted-foreground" />}
-            <span className="text-sm font-medium">
-              {groupName} ({notifications.length})
-            </span>
-          </div>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <div className="flex items-center gap-2">
+                  {GroupIcon && <GroupIcon className="h-4 w-4 text-muted-foreground" />}
+                  <span className="text-sm font-medium">
+                    {groupName} ({notifications.length})
+                  </span>
+                </div>
+              </TooltipTrigger>
+              {groupTooltips[groupName] && (
+                <TooltipContent>
+                  <p>{groupTooltips[groupName]}</p>
+                </TooltipContent>
+              )}
+            </Tooltip>
+          </TooltipProvider>
           
           {!isSeenGroup && !isUnansweredGroup && unreadCount > 0 && (
             <Button
