@@ -229,7 +229,7 @@ export const notificationsData: Notification[] = [
     name: "Workflow Bot",
     description: "Contract 'Enterprise Deal' awaiting approval",
     timestamp: "35m ago",
-    priority: "medium",
+    priority: "high",
     createdAt: new Date(Date.now() - 35 * 60 * 1000)
   },
 ];

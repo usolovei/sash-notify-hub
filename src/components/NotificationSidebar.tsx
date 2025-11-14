@@ -64,7 +64,10 @@ export const NotificationSidebar = ({
         moduleFilter === "All Modules" || notification.module === moduleFilter;
 
       const matchesPriority =
-        priorityFilter === "All Priorities" || notification.priority === priorityFilter.toLowerCase();
+        priorityFilter === "All Priorities" || 
+        (priorityFilter === "Need high attention" && notification.priority === "high") ||
+        (priorityFilter === "Moderate priority" && notification.priority === "medium") ||
+        (priorityFilter === "Low" && notification.priority === "low");
 
       const matchesDate = (() => {
         if (dateFilter === "All Time") return true;
@@ -190,8 +193,8 @@ export const NotificationSidebar = ({
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="All Priorities">All Priorities</SelectItem>
-                <SelectItem value="High">High</SelectItem>
-                <SelectItem value="Medium">Medium</SelectItem>
+                <SelectItem value="Need high attention">Need high attention</SelectItem>
+                <SelectItem value="Moderate priority">Moderate priority</SelectItem>
                 <SelectItem value="Low">Low</SelectItem>
               </SelectContent>
             </Select>
@@ -229,7 +232,7 @@ export const NotificationSidebar = ({
           )}
 
           {/* Show unread groups */}
-          {["Mentions", "Assigned to Me", "Task Updates", "Approval", "Unanswered"].map((groupName) => {
+          {["Approval", "Mentions", "Assigned to Me", "Task Updates", "Unanswered"].map((groupName) => {
             const groupNotifications = groupedNotifications[groupName];
             const unreadCount = groupNotifications?.filter(n => n.status === "unread").length || 0;
             

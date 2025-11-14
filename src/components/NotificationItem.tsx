@@ -113,7 +113,7 @@ export const NotificationItem = ({
                   notification.priority === "low" && "bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400"
                 )}
               >
-                {notification.priority.toUpperCase()}
+                {notification.priority === "high" ? "NEED HIGH ATTENTION" : notification.priority === "medium" ? "MODERATE PRIORITY" : "LOW"}
               </Badge>
             </div>
             <p className="text-sm">
