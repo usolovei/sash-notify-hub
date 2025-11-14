@@ -282,8 +282,14 @@ export const NotificationSidebar = ({
                 />
               ))}
               {plainViewNotifications.length === 0 && (
-                <div className="p-8 text-center text-muted-foreground">
-                  No notifications found
+                <div className="flex flex-col items-center justify-center p-12 text-center">
+                  <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-4">
+                    <CheckCircle2 className="h-8 w-8 text-primary" />
+                  </div>
+                  <h3 className="text-lg font-semibold mb-2">Hooray! You've got no unseen notifications.</h3>
+                  <p className="text-sm text-muted-foreground">
+                    You're all caught up. We'll notify you when something new arrives.
+                  </p>
                 </div>
               )}
             </div>
@@ -343,6 +349,20 @@ export const NotificationSidebar = ({
                   onPin={onPin}
                   onUnpin={onUnpin}
                 />
+              )}
+
+              {/* Empty state when all notifications are seen and hidden */}
+              {hideSeen && pinnedNotifications.length === 0 && 
+               Object.values(groupedNotifications).every(group => group.length === 0) && (
+                <div className="flex flex-col items-center justify-center p-12 text-center">
+                  <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-4">
+                    <CheckCircle2 className="h-8 w-8 text-primary" />
+                  </div>
+                  <h3 className="text-lg font-semibold mb-2">Hooray! You've got no unseen notifications.</h3>
+                  <p className="text-sm text-muted-foreground">
+                    You're all caught up. We'll notify you when something new arrives.
+                  </p>
+                </div>
               )}
             </>
           )}
