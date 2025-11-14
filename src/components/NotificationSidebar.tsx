@@ -285,31 +285,50 @@ export const NotificationSidebar = ({
         <div className="flex-1 overflow-y-auto">
           {showPlainView ? (
             /* Plain View - Flat list sorted by priority */
-            <div className="divide-y">
-              {plainViewNotifications.map((notification) => (
-                <NotificationItem
-                  key={notification.id}
-                  notification={notification}
+            <>
+              {/* Show Pinned group first */}
+              {pinnedNotifications.length > 0 && (
+                <NotificationGroup
+                  key="Pinned"
+                  groupName="Pinned"
+                  notifications={pinnedNotifications}
+                  unreadCount={0}
                   onMarkAsRead={onMarkAsRead}
                   onMarkAsUnread={onMarkAsUnread}
+                  onMarkGroupAsRead={onMarkGroupAsRead}
                   onNotificationClick={onNotificationClick}
                   onPin={onPin}
                   onUnpin={onUnpin}
-                  isPinned={notification.pinned || false}
                 />
-              ))}
-              {plainViewNotifications.length === 0 && (
-                <div className="flex flex-col items-center justify-center p-12 text-center">
-                  <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-4">
-                    <CheckCircle2 className="h-8 w-8 text-primary" />
-                  </div>
-                  <h3 className="text-lg font-semibold mb-2">Hooray! You've got no unseen notifications.</h3>
-                  <p className="text-sm text-muted-foreground">
-                    You're all caught up. We'll notify you when something new arrives.
-                  </p>
-                </div>
               )}
-            </div>
+              
+              {/* Rest of notifications */}
+              <div className="divide-y">
+                {plainViewNotifications.filter(n => !n.pinned).map((notification) => (
+                  <NotificationItem
+                    key={notification.id}
+                    notification={notification}
+                    onMarkAsRead={onMarkAsRead}
+                    onMarkAsUnread={onMarkAsUnread}
+                    onNotificationClick={onNotificationClick}
+                    onPin={onPin}
+                    onUnpin={onUnpin}
+                    isPinned={notification.pinned || false}
+                  />
+                ))}
+                {plainViewNotifications.filter(n => !n.pinned).length === 0 && pinnedNotifications.length === 0 && (
+                  <div className="flex flex-col items-center justify-center p-12 text-center">
+                    <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-4">
+                      <CheckCircle2 className="h-8 w-8 text-primary" />
+                    </div>
+                    <h3 className="text-lg font-semibold mb-2">Hooray! You've got no unseen notifications.</h3>
+                    <p className="text-sm text-muted-foreground">
+                      You're all caught up. We'll notify you when something new arrives.
+                    </p>
+                  </div>
+                )}
+              </div>
+            </>
           ) : (
             /* Grouped View */
             <>
