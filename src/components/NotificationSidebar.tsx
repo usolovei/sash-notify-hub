@@ -17,6 +17,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Notification } from "@/data/notifications";
 import { NotificationGroup } from "./NotificationGroup";
 import { NotificationItem } from "./NotificationItem";
@@ -169,17 +170,20 @@ export const NotificationSidebar = ({
         {/* Header */}
         <div className="border-b p-4 space-y-4">
           <div className="flex items-center justify-between">
-            <h2 className="text-lg font-semibold flex items-center gap-2">
+            <div className="flex items-center gap-3">
               <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
                 <CheckCircle2 className="h-4 w-4 text-primary" />
               </div>
-              Notifications
-            </h2>
+              <h2 className="text-lg font-semibold">Notifications</h2>
+              <Tabs value={showPlainView ? "plain" : "smart"} onValueChange={(value) => onShowPlainViewChange(value === "plain")}>
+                <TabsList className="h-8">
+                  <TabsTrigger value="smart" className="text-xs px-3">Smart View</TabsTrigger>
+                  <TabsTrigger value="plain" className="text-xs px-3">Plain View</TabsTrigger>
+                </TabsList>
+              </Tabs>
+            </div>
             <div className="flex items-center gap-2">
-              <NotificationSettings 
-                showPlainView={showPlainView}
-                onShowPlainViewChange={onShowPlainViewChange}
-              />
+              <NotificationSettings />
               <Button variant="ghost" size="icon" onClick={onClose}>
                 <X className="h-5 w-5" />
               </Button>

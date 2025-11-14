@@ -12,12 +12,7 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
 
-interface NotificationSettingsProps {
-  showPlainView: boolean;
-  onShowPlainViewChange: (value: boolean) => void;
-}
-
-export const NotificationSettings = ({ showPlainView, onShowPlainViewChange }: NotificationSettingsProps) => {
+export const NotificationSettings = () => {
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -85,25 +80,6 @@ export const NotificationSettings = ({ showPlainView, onShowPlainViewChange }: N
                 </span>
               </Label>
               <Switch id="updates" defaultChecked />
-            </div>
-          </div>
-
-          <Separator />
-
-          <div className="space-y-4">
-            <h4 className="font-medium text-sm">View Settings</h4>
-            <div className="flex items-center justify-between">
-              <Label htmlFor="plain-view" className="flex flex-col gap-1">
-                <span>Show plain view</span>
-                <span className="font-normal text-xs text-muted-foreground">
-                  Display all notifications in a flat list sorted by priority
-                </span>
-              </Label>
-              <Switch 
-                id="plain-view" 
-                checked={showPlainView}
-                onCheckedChange={onShowPlainViewChange}
-              />
             </div>
           </div>
 
