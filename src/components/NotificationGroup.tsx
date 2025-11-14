@@ -151,6 +151,7 @@ export const NotificationGroup = ({
             onPin={onPin}
             onUnpin={onUnpin}
             isPinned={groupName === "Pinned"}
+            showPinButton={true}
           />
         ))}
       </div>
