@@ -1,5 +1,12 @@
 import { useState, useMemo } from "react";
 import { X, Search, CheckCircle2, Filter, AtSign, UserCheck, ListTodo, HelpCircle, CheckSquare2, Pin, Undo2 } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
@@ -36,6 +43,8 @@ interface NotificationSidebarProps {
   onUnpin: (id: number) => void;
   showPlainView: boolean;
   onShowPlainViewChange: (value: boolean) => void;
+  hideSeen: boolean;
+  onHideSeenChange: (value: boolean) => void;
 }
 
 export const NotificationSidebar = ({
@@ -52,6 +61,8 @@ export const NotificationSidebar = ({
   onUnpin,
   showPlainView,
   onShowPlainViewChange,
+  hideSeen,
+  onHideSeenChange,
 }: NotificationSidebarProps) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [moduleFilter, setModuleFilter] = useState("All Modules");
@@ -132,8 +143,11 @@ export const NotificationSidebar = ({
   const plainViewNotifications = useMemo(() => {
     if (!showPlainView) return [];
     const priorityOrder = { high: 0, medium: 1, low: 2 };
-    return [...filteredNotifications].sort((a, b) => priorityOrder[a.priority] - priorityOrder[b.priority]);
-  }, [filteredNotifications, showPlainView]);
+    const filtered = hideSeen 
+      ? filteredNotifications.filter(n => n.status !== "read" || n.pinned)
+      : filteredNotifications;
+    return [...filtered].sort((a, b) => priorityOrder[a.priority] - priorityOrder[b.priority]);
+  }, [filteredNotifications, showPlainView, hideSeen]);
 
   return (
     <>
@@ -182,43 +196,74 @@ export const NotificationSidebar = ({
             />
           </div>
 
-          {/* Filters */}
-          <div className="flex items-center gap-2">
-            <Filter className="h-4 w-4 text-muted-foreground" />
-            <Select value={dateFilter} onValueChange={setDateFilter}>
-              <SelectTrigger className="w-[120px]">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="All Time">All Time</SelectItem>
-                <SelectItem value="Today">Today</SelectItem>
-                <SelectItem value="This Week">This Week</SelectItem>
-                <SelectItem value="This Month">This Month</SelectItem>
-              </SelectContent>
-            </Select>
-            <Select value={priorityFilter} onValueChange={setPriorityFilter}>
-              <SelectTrigger className="w-[130px]">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="All Priorities">All Priorities</SelectItem>
-                <SelectItem value="Need high attention">Need high attention</SelectItem>
-                <SelectItem value="Moderate priority">Moderate priority</SelectItem>
-                <SelectItem value="Low">Low</SelectItem>
-              </SelectContent>
-            </Select>
-            <Select value={moduleFilter} onValueChange={setModuleFilter}>
-              <SelectTrigger className="w-[140px]">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="All Modules">All Modules</SelectItem>
-                <SelectItem value="Tasks">Tasks</SelectItem>
-                <SelectItem value="CRM Requests">CRM Requests</SelectItem>
-                <SelectItem value="Care Service">Care Service</SelectItem>
-                <SelectItem value="Knowledge Base">Knowledge Base</SelectItem>
-              </SelectContent>
-            </Select>
+          {/* Filters and Hide Seen Toggle */}
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center gap-2">
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button variant="outline" size="icon">
+                    <Filter className="h-4 w-4" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-80" align="start">
+                  <div className="space-y-4">
+                    <div className="space-y-2">
+                      <Label className="text-sm font-medium">Date</Label>
+                      <Select value={dateFilter} onValueChange={setDateFilter}>
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="All Time">All Time</SelectItem>
+                          <SelectItem value="Today">Today</SelectItem>
+                          <SelectItem value="This Week">This Week</SelectItem>
+                          <SelectItem value="This Month">This Month</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="text-sm font-medium">Priority</Label>
+                      <Select value={priorityFilter} onValueChange={setPriorityFilter}>
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="All Priorities">All Priorities</SelectItem>
+                          <SelectItem value="Need high attention">Need high attention</SelectItem>
+                          <SelectItem value="Moderate priority">Moderate priority</SelectItem>
+                          <SelectItem value="Low">Low</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="text-sm font-medium">Module</Label>
+                      <Select value={moduleFilter} onValueChange={setModuleFilter}>
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="All Modules">All Modules</SelectItem>
+                          <SelectItem value="Tasks">Tasks</SelectItem>
+                          <SelectItem value="CRM Requests">CRM Requests</SelectItem>
+                          <SelectItem value="Care Service">Care Service</SelectItem>
+                          <SelectItem value="Knowledge Base">Knowledge Base</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                </PopoverContent>
+              </Popover>
+            </div>
+            <div className="flex items-center gap-2">
+              <Label htmlFor="hide-seen" className="text-sm cursor-pointer">
+                Hide seen
+              </Label>
+              <Switch
+                id="hide-seen"
+                checked={hideSeen}
+                onCheckedChange={onHideSeenChange}
+              />
+            </div>
           </div>
         </div>
 
@@ -288,7 +333,7 @@ export const NotificationSidebar = ({
               })}
               
               {/* Show Seen group at the bottom */}
-              {seenNotifications.length > 0 && (
+              {!hideSeen && seenNotifications.length > 0 && (
                 <NotificationGroup
                   key="Seen"
                   groupName="Seen"
