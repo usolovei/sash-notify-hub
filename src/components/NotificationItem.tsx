@@ -14,6 +14,7 @@ interface NotificationItemProps {
   onPin: (id: number) => void;
   onUnpin: (id: number) => void;
   isPinned: boolean;
+  showPinButton?: boolean;
 }
 
 const moduleIcons = {
@@ -31,6 +32,7 @@ export const NotificationItem = ({
   onPin,
   onUnpin,
   isPinned,
+  showPinButton = true,
 }: NotificationItemProps) => {
   const [isHovered, setIsHovered] = useState(false);
   
@@ -125,7 +127,7 @@ export const NotificationItem = ({
 
           {/* Action Buttons */}
           <div className="flex-shrink-0">
-            {isPinned ? (
+            {showPinButton && isPinned ? (
               <Button
                 variant="ghost"
                 size="icon"
@@ -139,15 +141,17 @@ export const NotificationItem = ({
               <>
                 {isUnread ? (
                   <div className="flex gap-1">
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={handlePin}
-                      className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none group-hover:pointer-events-auto"
-                      title="Pin"
-                    >
-                      <Pin className="h-4 w-4 text-muted-foreground" />
-                    </Button>
+                    {showPinButton && (
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={handlePin}
+                        className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none group-hover:pointer-events-auto"
+                        title="Pin"
+                      >
+                        <Pin className="h-4 w-4 text-muted-foreground" />
+                      </Button>
+                    )}
                     <Button
                       variant="ghost"
                       size="icon"
@@ -160,15 +164,17 @@ export const NotificationItem = ({
                   </div>
                 ) : (
                   <div className="flex gap-1">
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={handlePin}
-                      className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none group-hover:pointer-events-auto"
-                      title="Pin"
-                    >
-                      <Pin className="h-4 w-4 text-muted-foreground" />
-                    </Button>
+                    {showPinButton && (
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={handlePin}
+                        className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none group-hover:pointer-events-auto"
+                        title="Pin"
+                      >
+                        <Pin className="h-4 w-4 text-muted-foreground" />
+                      </Button>
+                    )}
                     <Button
                       variant="ghost"
                       size="icon"

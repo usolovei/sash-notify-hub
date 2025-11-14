@@ -296,6 +296,7 @@ export const NotificationSidebar = ({
                   onPin={onPin}
                   onUnpin={onUnpin}
                   isPinned={notification.pinned || false}
+                  showPinButton={false}
                 />
               ))}
               {plainViewNotifications.length === 0 && (
