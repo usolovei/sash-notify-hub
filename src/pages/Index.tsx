@@ -17,7 +17,15 @@ const Index = () => {
   const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [lastOperation, setLastOperation] = useState<LastOperation | null>(null);
   const [showPlainView, setShowPlainView] = useState(false);
-  const [hideSeen, setHideSeen] = useState(false);
+  const [showSeen, setShowSeen] = useState(() => {
+    const saved = localStorage.getItem('notification-show-seen');
+    return saved !== null ? JSON.parse(saved) : false;
+  });
+
+  const handleShowSeenChange = (value: boolean) => {
+    setShowSeen(value);
+    localStorage.setItem('notification-show-seen', JSON.stringify(value));
+  };
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
   const unreadCount = useMemo(() => {
@@ -199,8 +207,8 @@ const Index = () => {
         onUnpin={handleUnpin}
         showPlainView={showPlainView}
         onShowPlainViewChange={setShowPlainView}
-        hideSeen={hideSeen}
-        onHideSeenChange={setHideSeen}
+        showSeen={showSeen}
+        onShowSeenChange={handleShowSeenChange}
       />
 
       <NotificationDetail
