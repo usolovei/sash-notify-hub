@@ -11,8 +11,17 @@ import {
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
-export const NotificationSettings = () => {
+interface NotificationSettingsProps {
+  showPlainView: boolean;
+  onShowPlainViewChange: (value: boolean) => void;
+}
+
+export const NotificationSettings = ({
+  showPlainView,
+  onShowPlainViewChange,
+}: NotificationSettingsProps) => {
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -28,6 +37,26 @@ export const NotificationSettings = () => {
           </DialogDescription>
         </DialogHeader>
         <div className="space-y-6 py-4">
+          <div className="space-y-4">
+            <h4 className="font-medium text-sm">View Mode</h4>
+            <RadioGroup 
+              value={showPlainView ? "plain" : "smart"} 
+              onValueChange={(value) => onShowPlainViewChange(value === "plain")}
+              className="flex gap-4"
+            >
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="smart" id="smart-view" />
+                <Label htmlFor="smart-view" className="cursor-pointer">Smart view</Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="plain" id="plain-view" />
+                <Label htmlFor="plain-view" className="cursor-pointer">Plain view</Label>
+              </div>
+            </RadioGroup>
+          </div>
+
+          <Separator />
+
           <div className="space-y-4">
             <h4 className="font-medium text-sm">General</h4>
             <div className="flex items-center justify-between">
