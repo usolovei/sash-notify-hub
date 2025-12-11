@@ -43,8 +43,8 @@ interface NotificationSidebarProps {
   onUnpin: (id: number) => void;
   showPlainView: boolean;
   onShowPlainViewChange: (value: boolean) => void;
-  hideSeen: boolean;
-  onHideSeenChange: (value: boolean) => void;
+  showSeen: boolean;
+  onShowSeenChange: (value: boolean) => void;
 }
 
 export const NotificationSidebar = ({
@@ -61,8 +61,8 @@ export const NotificationSidebar = ({
   onUnpin,
   showPlainView,
   onShowPlainViewChange,
-  hideSeen,
-  onHideSeenChange,
+  showSeen,
+  onShowSeenChange,
 }: NotificationSidebarProps) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [moduleFilter, setModuleFilter] = useState("All Modules");
@@ -143,11 +143,11 @@ export const NotificationSidebar = ({
   const plainViewNotifications = useMemo(() => {
     if (!showPlainView) return [];
     const priorityOrder = { high: 0, medium: 1, low: 2 };
-    const filtered = hideSeen 
-      ? filteredNotifications.filter(n => n.status !== "read" || n.pinned)
-      : filteredNotifications;
+    const filtered = showSeen 
+      ? filteredNotifications
+      : filteredNotifications.filter(n => n.status !== "read" || n.pinned);
     return [...filtered].sort((a, b) => priorityOrder[a.priority] - priorityOrder[b.priority]);
-  }, [filteredNotifications, showPlainView, hideSeen]);
+  }, [filteredNotifications, showPlainView, showSeen]);
 
   return (
     <>
@@ -253,13 +253,13 @@ export const NotificationSidebar = ({
                 </PopoverContent>
               </Popover>
               <div className="flex items-center gap-2 pl-2 border-l">
-                <Label htmlFor="hide-seen" className="text-xs cursor-pointer whitespace-nowrap">
-                  Hide seen
+                <Label htmlFor="show-seen" className="text-xs cursor-pointer whitespace-nowrap">
+                  Show seen
                 </Label>
                 <Switch
-                  id="hide-seen"
-                  checked={hideSeen}
-                  onCheckedChange={onHideSeenChange}
+                  id="show-seen"
+                  checked={showSeen}
+                  onCheckedChange={onShowSeenChange}
                 />
               </div>
             </div>
@@ -339,7 +339,7 @@ export const NotificationSidebar = ({
               })}
               
               {/* Show Seen group at the bottom */}
-              {!hideSeen && seenNotifications.length > 0 && (
+              {showSeen && seenNotifications.length > 0 && (
                 <NotificationGroup
                   key="Seen"
                   groupName="Seen"
@@ -355,7 +355,7 @@ export const NotificationSidebar = ({
               )}
 
               {/* Empty state when all notifications are seen and hidden */}
-              {hideSeen && pinnedNotifications.length === 0 && 
+              {!showSeen && pinnedNotifications.length === 0 && 
                Object.values(groupedNotifications).every(group => group.length === 0) && (
                 <div className="flex flex-col items-center justify-center p-12 text-center">
                   <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-4">
