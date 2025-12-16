@@ -45,6 +45,8 @@ interface NotificationSidebarProps {
   onShowPlainViewChange: (value: boolean) => void;
   showSeen: boolean;
   onShowSeenChange: (value: boolean) => void;
+  showPriorities: boolean;
+  onShowPrioritiesChange: (value: boolean) => void;
 }
 
 export const NotificationSidebar = ({
@@ -63,6 +65,8 @@ export const NotificationSidebar = ({
   onShowPlainViewChange,
   showSeen,
   onShowSeenChange,
+  showPriorities,
+  onShowPrioritiesChange,
 }: NotificationSidebarProps) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [moduleFilter, setModuleFilter] = useState("All Modules");
@@ -179,6 +183,8 @@ export const NotificationSidebar = ({
               <NotificationSettings 
                 showPlainView={showPlainView}
                 onShowPlainViewChange={onShowPlainViewChange}
+                showPriorities={showPriorities}
+                onShowPrioritiesChange={onShowPrioritiesChange}
               />
               <Button variant="ghost" size="icon" onClick={onClose}>
                 <X className="h-5 w-5" />
@@ -282,6 +288,7 @@ export const NotificationSidebar = ({
                   onUnpin={onUnpin}
                   isPinned={notification.pinned || false}
                   showPinButton={false}
+                  showPriority={showPriorities}
                 />
               ))}
               {plainViewNotifications.length === 0 && (
@@ -312,6 +319,7 @@ export const NotificationSidebar = ({
                   onNotificationClick={onNotificationClick}
                   onPin={onPin}
                   onUnpin={onUnpin}
+                  showPriority={showPriorities}
                 />
               )}
 
@@ -334,6 +342,7 @@ export const NotificationSidebar = ({
                     onNotificationClick={onNotificationClick}
                     onPin={onPin}
                     onUnpin={onUnpin}
+                    showPriority={showPriorities}
                   />
                 );
               })}
@@ -351,6 +360,7 @@ export const NotificationSidebar = ({
                   onNotificationClick={onNotificationClick}
                   onPin={onPin}
                   onUnpin={onUnpin}
+                  showPriority={showPriorities}
                 />
               )}
 

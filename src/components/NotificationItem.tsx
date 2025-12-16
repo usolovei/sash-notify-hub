@@ -15,6 +15,7 @@ interface NotificationItemProps {
   onUnpin: (id: number) => void;
   isPinned: boolean;
   showPinButton?: boolean;
+  showPriority?: boolean;
 }
 
 const moduleIcons = {
@@ -33,6 +34,7 @@ export const NotificationItem = ({
   onUnpin,
   isPinned,
   showPinButton = true,
+  showPriority = true,
 }: NotificationItemProps) => {
   const [isHovered, setIsHovered] = useState(false);
   
@@ -105,7 +107,7 @@ export const NotificationItem = ({
       <div className="flex-1 min-w-0">
         <div className="flex items-start justify-between gap-2">
           <div className="flex-1 min-w-0">
-            {notification.priority && (
+            {showPriority && notification.priority && (
               <div className="flex items-center gap-2 mb-1">
                 <Badge 
                   variant="outline"

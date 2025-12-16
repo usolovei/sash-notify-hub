@@ -33,6 +33,7 @@ interface NotificationGroupProps {
   onNotificationClick: (notification: Notification) => void;
   onPin: (id: number) => void;
   onUnpin: (id: number) => void;
+  showPriority?: boolean;
 }
 
 export const NotificationGroup = ({
@@ -45,6 +46,7 @@ export const NotificationGroup = ({
   onNotificationClick,
   onPin,
   onUnpin,
+  showPriority = true,
 }: NotificationGroupProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
 
@@ -152,6 +154,7 @@ export const NotificationGroup = ({
             onUnpin={onUnpin}
             isPinned={groupName === "Pinned"}
             showPinButton={true}
+            showPriority={showPriority}
           />
         ))}
       </div>
