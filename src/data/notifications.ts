@@ -7,7 +7,7 @@ export interface Notification {
   description: string;
   timestamp: string;
   pinned?: boolean;
-  priority: "high" | "medium" | "low";
+  priority?: "high" | "medium" | "low";
   createdAt: Date;
 }
 
@@ -54,7 +54,6 @@ export const notificationsData: Notification[] = [
     name: "Mike Chen",
     description: "tagged you in article 'API Documentation Updates'",
     timestamp: "2h ago",
-    priority: "low",
     createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000)
   },
   {
@@ -89,7 +88,6 @@ export const notificationsData: Notification[] = [
     name: "Salesforce Sync",
     description: "New opportunity 'Globex Inc.' assigned",
     timestamp: "45m ago",
-    priority: "medium",
     createdAt: new Date(Date.now() - 45 * 60 * 1000)
   },
   {
@@ -135,7 +133,6 @@ export const notificationsData: Notification[] = [
     name: "Mike Johnson",
     description: "completed 'User Research Synthesis'",
     timestamp: "5m ago",
-    priority: "low",
     createdAt: new Date(Date.now() - 5 * 60 * 1000)
   },
   {
@@ -168,7 +165,6 @@ export const notificationsData: Notification[] = [
     name: "Jane Doe",
     description: "commented on Ticket #880-C",
     timestamp: "2h ago",
-    priority: "low",
     createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000)
   },
   {
@@ -203,7 +199,6 @@ export const notificationsData: Notification[] = [
     name: "Project Bot",
     description: "Task 'Review wireframes' assigned",
     timestamp: "1d ago",
-    priority: "medium",
     createdAt: new Date(Date.now() - 24 * 60 * 60 * 1000)
   },
   
