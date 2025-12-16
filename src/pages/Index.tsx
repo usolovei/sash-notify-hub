@@ -21,10 +21,19 @@ const Index = () => {
     const saved = localStorage.getItem('notification-show-seen');
     return saved !== null ? JSON.parse(saved) : false;
   });
+  const [showPriorities, setShowPriorities] = useState(() => {
+    const saved = localStorage.getItem('notification-show-priorities');
+    return saved !== null ? JSON.parse(saved) : true;
+  });
 
   const handleShowSeenChange = (value: boolean) => {
     setShowSeen(value);
     localStorage.setItem('notification-show-seen', JSON.stringify(value));
+  };
+
+  const handleShowPrioritiesChange = (value: boolean) => {
+    setShowPriorities(value);
+    localStorage.setItem('notification-show-priorities', JSON.stringify(value));
   };
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -209,6 +218,8 @@ const Index = () => {
         onShowPlainViewChange={setShowPlainView}
         showSeen={showSeen}
         onShowSeenChange={handleShowSeenChange}
+        showPriorities={showPriorities}
+        onShowPrioritiesChange={handleShowPrioritiesChange}
       />
 
       <NotificationDetail

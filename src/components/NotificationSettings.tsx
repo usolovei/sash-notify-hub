@@ -16,11 +16,15 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 interface NotificationSettingsProps {
   showPlainView: boolean;
   onShowPlainViewChange: (value: boolean) => void;
+  showPriorities: boolean;
+  onShowPrioritiesChange: (value: boolean) => void;
 }
 
 export const NotificationSettings = ({
   showPlainView,
   onShowPlainViewChange,
+  showPriorities,
+  onShowPrioritiesChange,
 }: NotificationSettingsProps) => {
   return (
     <Dialog>
@@ -53,6 +57,23 @@ export const NotificationSettings = ({
                 <Label htmlFor="plain-view" className="cursor-pointer">Plain view</Label>
               </div>
             </RadioGroup>
+          </div>
+
+          <div className="space-y-4">
+            <h4 className="font-medium text-sm">Display</h4>
+            <div className="flex items-center justify-between">
+              <Label htmlFor="show-priorities" className="flex flex-col gap-1">
+                <span>Show priorities</span>
+                <span className="font-normal text-xs text-muted-foreground">
+                  Display priority badges on notifications
+                </span>
+              </Label>
+              <Switch 
+                id="show-priorities" 
+                checked={showPriorities}
+                onCheckedChange={onShowPrioritiesChange}
+              />
+            </div>
           </div>
 
           <Separator />
