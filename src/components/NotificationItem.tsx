@@ -107,8 +107,13 @@ export const NotificationItem = ({
       <div className="flex-1 min-w-0">
         <div className="flex items-start justify-between gap-2">
           <div className="flex-1 min-w-0">
-            {showPriority && notification.priority && (
-              <div className="flex items-center gap-2 mb-1">
+            <p className="text-sm">
+              <span className="font-medium">{notification.name}</span>{" "}
+              <span className="text-muted-foreground">{notification.description}</span>
+            </p>
+            <div className="flex items-center gap-2 mt-1">
+              <span className="text-xs text-muted-foreground">{notification.timestamp}</span>
+              {showPriority && notification.priority && (
                 <Badge 
                   variant="outline"
                   className={cn(
@@ -120,13 +125,8 @@ export const NotificationItem = ({
                 >
                   {notification.priority === "high" ? "NEED HIGH ATTENTION" : notification.priority === "medium" ? "MODERATE PRIORITY" : "LOW"}
                 </Badge>
-              </div>
-            )}
-            <p className="text-sm">
-              <span className="font-medium">{notification.name}</span>{" "}
-              <span className="text-muted-foreground">{notification.description}</span>
-            </p>
-            <p className="text-xs text-muted-foreground mt-1">{notification.timestamp}</p>
+              )}
+            </div>
           </div>
 
           {/* Action Buttons */}
