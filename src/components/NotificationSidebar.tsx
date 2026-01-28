@@ -274,10 +274,30 @@ export const NotificationSidebar = ({
 
         {/* Notification Groups */}
         <div className="flex-1 overflow-y-auto">
-          {showPlainView ? (
-            /* Plain View - Flat list sorted by priority */
+        {showPlainView ? (
+          /* Plain View - Flat list sorted by priority */
+          <div>
+            {/* Inbox Header */}
+            <div className="flex items-center justify-between px-4 py-3 border-b bg-muted/30">
+              <h3 className="text-sm font-semibold text-foreground">Inbox</h3>
+              {plainViewNotifications.some(n => n.status === "unread") && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-7 text-xs text-muted-foreground hover:text-foreground"
+                  onClick={() => {
+                    const unreadIds = plainViewNotifications
+                      .filter(n => n.status === "unread")
+                      .map(n => n.id);
+                    unreadIds.forEach(id => onMarkAsRead(id));
+                  }}
+                >
+                  Read all
+                </Button>
+              )}
+            </div>
             <div className="divide-y">
-              {plainViewNotifications.map((notification) => (
+            {plainViewNotifications.map((notification) => (
                 <NotificationItem
                   key={notification.id}
                   notification={notification}
@@ -303,7 +323,8 @@ export const NotificationSidebar = ({
                 </div>
               )}
             </div>
-          ) : (
+          </div>
+        ) : (
             /* Grouped View */
             <>
               {/* Show Pinned group first */}
