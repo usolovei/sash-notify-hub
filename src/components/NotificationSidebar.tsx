@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { X, Search, CheckCircle2, Filter, AtSign, UserCheck, ListTodo, HelpCircle, CheckSquare2, Pin, Undo2 } from "lucide-react";
+import { X, Search, CheckCircle2, Filter, AtSign, UserCheck, ListTodo, HelpCircle, CheckSquare2, Pin, Undo2, Inbox, Check } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import {
@@ -278,23 +278,31 @@ export const NotificationSidebar = ({
           /* Plain View - Flat list sorted by priority */
           <div>
             {/* Inbox Header */}
-            <div className="flex items-center justify-between px-4 py-3 border-b bg-muted/30">
-              <h3 className="text-sm font-semibold text-foreground">Inbox</h3>
-              {plainViewNotifications.some(n => n.status === "unread") && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="h-7 text-xs text-muted-foreground hover:text-foreground"
-                  onClick={() => {
-                    const unreadIds = plainViewNotifications
-                      .filter(n => n.status === "unread")
-                      .map(n => n.id);
-                    unreadIds.forEach(id => onMarkAsRead(id));
-                  }}
-                >
-                  Read all
-                </Button>
-              )}
+            <div className="px-4 py-3 bg-muted/30 border-b">
+              <div className="flex items-center justify-between gap-2">
+                <div className="flex items-center gap-2">
+                  <Inbox className="h-4 w-4 text-muted-foreground" />
+                  <span className="text-sm font-medium">
+                    Inbox ({plainViewNotifications.length})
+                  </span>
+                </div>
+                {plainViewNotifications.some(n => n.status === "unread") && (
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-7 w-7 hover:bg-primary/10"
+                    title="Mark all as read"
+                    onClick={() => {
+                      const unreadIds = plainViewNotifications
+                        .filter(n => n.status === "unread")
+                        .map(n => n.id);
+                      unreadIds.forEach(id => onMarkAsRead(id));
+                    }}
+                  >
+                    <Check className="h-4 w-4" />
+                  </Button>
+                )}
+              </div>
             </div>
             <div className="divide-y">
             {plainViewNotifications.map((notification) => (
