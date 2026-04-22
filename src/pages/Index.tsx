@@ -35,7 +35,7 @@ const Index = () => {
     setShowPriorities(value);
     localStorage.setItem('notification-show-priorities', JSON.stringify(value));
   };
-  const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const unreadCount = useMemo(() => {
     return notifications.filter((n) => n.status === "unread").length;
