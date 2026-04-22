@@ -194,14 +194,14 @@ export const NotificationSidebar = ({
 
           {/* Controls Row */}
           <div className="flex items-center justify-between gap-3">
-            {/* Left: Search Bar */}
-            <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            {/* Left: Search Bar - expands on focus to overlay module filter */}
+            <div className="relative flex-1 group">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground z-10" />
               <Input
                 placeholder="Search..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-9 h-8"
+                className="pl-9 h-8 relative transition-all duration-200 focus:w-[calc(100%+148px)] focus:z-20 focus:shadow-md"
               />
             </div>
 
