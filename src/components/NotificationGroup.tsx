@@ -34,6 +34,7 @@ interface NotificationGroupProps {
   onPin: (id: number) => void;
   onUnpin: (id: number) => void;
   showPriority?: boolean;
+  initialVisible?: number;
 }
 
 export const NotificationGroup = ({
@@ -47,16 +48,17 @@ export const NotificationGroup = ({
   onPin,
   onUnpin,
   showPriority = true,
+  initialVisible = 3,
 }: NotificationGroupProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
 
   const displayedNotifications = isExpanded
     ? notifications
-    : notifications.slice(0, 3);
+    : notifications.slice(0, initialVisible);
 
   const handleMarkAsRead = () => {
     // Get IDs to mark as read based on expanded state
-    const notificationsToMark = isExpanded ? notifications : notifications.slice(0, 3);
+    const notificationsToMark = isExpanded ? notifications : notifications.slice(0, initialVisible);
     const idsToMark = notificationsToMark
       .filter(n => n.status === "unread")
       .map(n => n.id);
@@ -68,7 +70,7 @@ export const NotificationGroup = ({
 
   const handleMarkAllAsUnread = () => {
     // Mark all seen notifications as unread
-    const notificationsToMark = isExpanded ? notifications : notifications.slice(0, 3);
+    const notificationsToMark = isExpanded ? notifications : notifications.slice(0, initialVisible);
     
     notificationsToMark.forEach((notification) => {
       if (notification.status === "read") {
@@ -159,7 +161,7 @@ export const NotificationGroup = ({
         ))}
       </div>
 
-      {notifications.length > 3 && (
+      {notifications.length > initialVisible && (
         <div className="px-4 py-2">
           <Button
             variant="ghost"

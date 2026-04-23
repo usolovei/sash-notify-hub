@@ -419,6 +419,7 @@ export const NotificationSidebar = ({
                   onPin={onPin}
                   onUnpin={onUnpin}
                   showPriority={showPriorities}
+                  initialVisible={unreadCount === 0 ? 20 : 3}
                 />
               )}
 
