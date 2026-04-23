@@ -219,7 +219,6 @@ export const NotificationItem = ({
                   )}
                 </>
               )}
-            </div>
           </div>
         </div>
       </div>
