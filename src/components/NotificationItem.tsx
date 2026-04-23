@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Circle, CheckCircle2, CheckSquare, Users, Headphones, Book, Pin, PinOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -43,6 +43,24 @@ export const NotificationItem = ({
   isPendingRead = false,
 }: NotificationItemProps) => {
   const [isHovered, setIsHovered] = useState(false);
+  // Two-phase slide: when isPendingRead flips on, we render the card in its
+  // normal position for one frame, THEN apply translate-x-full so the browser
+  // animates the transition. Without this, the card mounts already slid.
+  const [slideArmed, setSlideArmed] = useState(false);
+
+  useEffect(() => {
+    if (!isPendingRead) {
+      setSlideArmed(false);
+      return;
+    }
+    // Wait two frames to guarantee the initial (translate-x-0) styles
+    // are committed before we toggle to translate-x-full.
+    const r1 = requestAnimationFrame(() => {
+      const r2 = requestAnimationFrame(() => setSlideArmed(true));
+      return () => cancelAnimationFrame(r2);
+    });
+    return () => cancelAnimationFrame(r1);
+  }, [isPendingRead]);
 
   const isUnread = notification.status === "unread" && !isPendingRead;
   const ModuleIcon = moduleIcons[notification.module];
@@ -88,7 +106,7 @@ export const NotificationItem = ({
         // Slide LEFT → RIGHT when transitioning to read, revealing the
         // blue "Read" layer rendered behind by ReadRevealWrapper.
         "transition-transform ease-out",
-        isPendingRead ? "translate-x-full" : "translate-x-0"
+        isPendingRead && slideArmed ? "translate-x-full" : "translate-x-0"
       )}
       style={{ transitionDuration: `${SLIDE_MS}ms` }}
       onMouseEnter={() => setIsHovered(true)}
