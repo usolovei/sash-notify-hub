@@ -176,9 +176,9 @@ export const NotificationSidebar = ({
 
       {/* Sidebar */}
       <div
-        className={`fixed top-0 right-0 w-[500px] bg-background border-l shadow-2xl z-50 flex flex-col transition-transform duration-300 ${
-          isEmpty ? "h-[65vh]" : "h-full"
-        } ${isOpen ? "translate-x-0" : "translate-x-full"}`}
+        className={`fixed top-4 right-4 w-[500px] bg-background border shadow-2xl z-50 flex flex-col transition-transform duration-300 rounded-2xl overflow-hidden ${
+          isEmpty ? "h-[65vh]" : "h-[calc(100vh-2rem)]"
+        } ${isOpen ? "translate-x-0" : "translate-x-[calc(100%+1rem)]"}`}
       >
         {/* Header */}
         <div className="border-b p-4 space-y-3">
