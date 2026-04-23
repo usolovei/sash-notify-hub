@@ -28,7 +28,7 @@ const moduleIcons = {
 
 // Spark-style slide timing — cards slide LEFT → RIGHT.
 // Must match SLIDE_MS in ReadRevealWrapper.
-const SLIDE_MS = 300;
+const SLIDE_MS = 200;
 
 export const NotificationItem = ({
   notification,

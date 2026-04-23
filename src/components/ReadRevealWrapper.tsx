@@ -7,10 +7,10 @@ import { Check } from "lucide-react";
 // 3a) If backfill content is provided: crossfade blue → backfill cards over
 //     CROSSFADE_MS, no height change, no layout shift.
 // 3b) Otherwise: collapse the whole block's height to 0 over COLLAPSE_MS.
-const SLIDE_MS = 160;
-const HOLD_MS = 40;
-const CROSSFADE_MS = 90;
-const COLLAPSE_MS = 90;
+const SLIDE_MS = 200;
+const HOLD_MS = 60;
+const CROSSFADE_MS = 120;
+const COLLAPSE_MS = 120;
 
 interface ReadRevealWrapperProps {
   children: ReactNode;
