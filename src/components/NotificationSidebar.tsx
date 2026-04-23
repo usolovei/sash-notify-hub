@@ -153,6 +153,17 @@ export const NotificationSidebar = ({
     return [...filtered].sort((a, b) => priorityOrder[a.priority] - priorityOrder[b.priority]);
   }, [filteredNotifications, showPlainView, showSeen]);
 
+  const unreadCount = useMemo(
+    () => filteredNotifications.filter((n) => n.status === "unread").length,
+    [filteredNotifications]
+  );
+
+  const isEmpty = showPlainView
+    ? plainViewNotifications.length === 0
+    : pinnedNotifications.length === 0 &&
+      Object.values(groupedNotifications).every((g) => g.length === 0) &&
+      (!showSeen || seenNotifications.length === 0);
+
   return (
     <>
       {/* Backdrop */}
