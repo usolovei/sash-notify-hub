@@ -161,7 +161,7 @@ export const NotificationGroup = ({
         ))}
       </div>
 
-      {notifications.length > 3 && (
+      {notifications.length > initialVisible && (
         <div className="px-4 py-2">
           <Button
             variant="ghost"
