@@ -337,21 +337,63 @@ export const NotificationSidebar = ({
               </div>
             </div>
             <div className="divide-y flex-1 flex flex-col">
-            {plainViewNotifications.map((notification) => (
-                <NotificationItem
-                  key={notification.id}
-                  notification={notification}
-                  onMarkAsRead={onMarkAsRead}
-                  onMarkAsUnread={onMarkAsUnread}
-                  onNotificationClick={onNotificationClick}
-                  onPin={onPin}
-                  onUnpin={onUnpin}
-                  isPinned={notification.pinned || false}
-                  showPinButton={false}
-                  showPriority={showPriorities}
-                  isPendingRead={pendingReadIds.has(notification.id)}
-                />
-              ))}
+            {(() => {
+              // Group contiguous pending-read items into a single
+              // ReadRevealWrapper for the unified blue "Read" reveal.
+              const out: JSX.Element[] = [];
+              let buffer: Notification[] = [];
+
+              const flushBuffer = () => {
+                if (buffer.length === 0) return;
+                const items = buffer;
+                buffer = [];
+                out.push(
+                  <ReadRevealWrapper key={`reveal-${items[0].id}`}>
+                    {items.map((notification) => (
+                      <NotificationItem
+                        key={notification.id}
+                        notification={notification}
+                        onMarkAsRead={onMarkAsRead}
+                        onMarkAsUnread={onMarkAsUnread}
+                        onNotificationClick={onNotificationClick}
+                        onPin={onPin}
+                        onUnpin={onUnpin}
+                        isPinned={notification.pinned || false}
+                        showPinButton={false}
+                        showPriority={showPriorities}
+                        isPendingRead={true}
+                      />
+                    ))}
+                  </ReadRevealWrapper>
+                );
+              };
+
+              plainViewNotifications.forEach((notification) => {
+                if (pendingReadIds.has(notification.id)) {
+                  buffer.push(notification);
+                } else {
+                  flushBuffer();
+                  out.push(
+                    <NotificationItem
+                      key={notification.id}
+                      notification={notification}
+                      onMarkAsRead={onMarkAsRead}
+                      onMarkAsUnread={onMarkAsUnread}
+                      onNotificationClick={onNotificationClick}
+                      onPin={onPin}
+                      onUnpin={onUnpin}
+                      isPinned={notification.pinned || false}
+                      showPinButton={false}
+                      showPriority={showPriorities}
+                      isPendingRead={false}
+                    />
+                  );
+                }
+              });
+              flushBuffer();
+              return out;
+            })()}
+
               {plainViewNotifications.length === 0 && (
                 <div className="flex-1 flex flex-row items-center justify-center gap-5 p-8 text-left">
                   <img src={emptyBell} alt="" className="w-32 h-32 shrink-0" />
