@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Circle, CheckCircle2, CheckSquare, Users, Headphones, Book, Pin, PinOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -26,6 +26,10 @@ const moduleIcons = {
   "Knowledge Base": Book,
 };
 
+// Spark-style animation timings (must roughly match Index.tsx commit delay).
+const SLIDE_MS = 300;
+const COLLAPSE_MS = 150;
+
 export const NotificationItem = ({
   notification,
   onMarkAsRead,
@@ -39,10 +43,31 @@ export const NotificationItem = ({
   isPendingRead = false,
 }: NotificationItemProps) => {
   const [isHovered, setIsHovered] = useState(false);
+  const [isCollapsing, setIsCollapsing] = useState(false);
+  const [measuredHeight, setMeasuredHeight] = useState<number | null>(null);
+  const wrapperRef = useRef<HTMLDivElement>(null);
 
-  // Visual "read" state — true when actually read OR when transitioning to read.
   const isUnread = notification.status === "unread" && !isPendingRead;
   const ModuleIcon = moduleIcons[notification.module];
+
+  // When the item enters a "pending read" state, sequence the slide → collapse.
+  useEffect(() => {
+    if (!isPendingRead) {
+      // Reset (e.g. after undo) so the item returns to normal layout.
+      setIsCollapsing(false);
+      setMeasuredHeight(null);
+      return;
+    }
+
+    // Capture current rendered height so we can animate it down to 0.
+    if (wrapperRef.current) {
+      setMeasuredHeight(wrapperRef.current.offsetHeight);
+    }
+
+    // Begin collapsing right after the slide finishes.
+    const t = window.setTimeout(() => setIsCollapsing(true), SLIDE_MS);
+    return () => window.clearTimeout(t);
+  }, [isPendingRead]);
 
   const handleMarkAsRead = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -77,129 +102,169 @@ export const NotificationItem = ({
       .slice(0, 2);
   };
 
+  // Outer wrapper handles height collapse so siblings shift up smoothly.
+  const wrapperStyle: React.CSSProperties = isPendingRead
+    ? {
+        height: isCollapsing ? 0 : measuredHeight ?? undefined,
+        overflow: "hidden",
+        transition: `height ${COLLAPSE_MS}ms ease-out`,
+      }
+    : {};
+
   return (
-    <div
-      className={cn(
-        "px-4 py-3 flex items-start gap-3 relative group cursor-pointer",
-        "transition-colors duration-500 ease-out",
-        isUnread ? "bg-notification-unread" : "bg-background hover:bg-muted/30"
-      )}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-      onClick={handleClick}
-    >
-      {/* Unread Indicator - always rendered, fades via opacity for smooth transition */}
+    <div ref={wrapperRef} style={wrapperStyle}>
       <div
         className={cn(
-          "absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-notification-indicator rounded-r",
-          "transition-opacity duration-500 ease-out",
-          isUnread ? "opacity-100" : "opacity-0"
+          "px-4 py-3 flex items-start gap-3 relative group cursor-pointer",
+          "bg-background hover:bg-muted/30",
+          // Slide right→left when transitioning to read.
+          "transition-transform ease-out",
+          isPendingRead ? "-translate-x-full" : "translate-x-0"
         )}
-      />
+        style={{ transitionDuration: `${SLIDE_MS}ms` }}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+        onClick={handleClick}
+      >
+        {/* Unread background tint — present while truly unread. */}
+        <div
+          aria-hidden
+          className={cn(
+            "absolute inset-0 bg-notification-unread pointer-events-none",
+            "transition-opacity ease-out",
+            isUnread ? "opacity-100" : "opacity-0"
+          )}
+          style={{ transitionDuration: `${SLIDE_MS}ms` }}
+        />
 
-      {/* Avatar with Module Icon */}
-      <div className="relative flex-shrink-0">
-        <Avatar className="h-9 w-9">
-          <AvatarFallback className="bg-primary/10 text-primary text-xs font-medium">
-            {getInitials(notification.name)}
-          </AvatarFallback>
-        </Avatar>
-        {ModuleIcon && (
-          <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-background border-2 border-background flex items-center justify-center">
-            <ModuleIcon className="h-3 w-3 text-muted-foreground" />
-          </div>
-        )}
-      </div>
+        {/* Spark-style blue wash that flashes during the slide. */}
+        <div
+          aria-hidden
+          className={cn(
+            "absolute inset-0 pointer-events-none",
+            "transition-opacity ease-out",
+            isPendingRead ? "opacity-100" : "opacity-0"
+          )}
+          style={{
+            backgroundColor: "hsl(var(--primary) / 0.12)",
+            transitionDuration: `${SLIDE_MS}ms`,
+          }}
+        />
 
-      {/* Content */}
-      <div className="flex-1 min-w-0">
-        <div className="flex items-start justify-between gap-2">
-          <div className="flex-1 min-w-0">
-            <p className="text-sm transition-colors duration-500 ease-out">
-              <span className={cn("transition-all duration-500 ease-out", isUnread ? "font-semibold text-foreground" : "font-medium text-foreground/90")}>{notification.name}</span>{" "}
-              <span className={cn("transition-colors duration-500 ease-out", isUnread ? "text-foreground/80" : "text-muted-foreground")}>{notification.description}</span>
-            </p>
-            <div className="flex items-center gap-2 mt-1">
-              <span className="text-xs text-muted-foreground">{notification.timestamp}</span>
-              {showPriority && notification.priority && (
-                <Badge 
-                  variant="outline"
-                  className={cn(
-                    "h-4 px-1.5 text-[10px] font-medium border-0",
-                    notification.priority === "high" && "bg-red-100 text-red-700 dark:bg-red-950/30 dark:text-red-400",
-                    notification.priority === "medium" && "bg-yellow-100 text-yellow-700 dark:bg-yellow-950/30 dark:text-yellow-400",
-                    notification.priority === "low" && "bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400"
-                  )}
+        {/* Unread Indicator */}
+        <div
+          className={cn(
+            "absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-notification-indicator rounded-r",
+            "transition-opacity ease-out",
+            isUnread ? "opacity-100" : "opacity-0"
+          )}
+          style={{ transitionDuration: `${SLIDE_MS}ms` }}
+        />
+
+        {/* Avatar with Module Icon */}
+        <div className="relative flex-shrink-0">
+          <Avatar className="h-9 w-9">
+            <AvatarFallback className="bg-primary/10 text-primary text-xs font-medium">
+              {getInitials(notification.name)}
+            </AvatarFallback>
+          </Avatar>
+          {ModuleIcon && (
+            <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-background border-2 border-background flex items-center justify-center">
+              <ModuleIcon className="h-3 w-3 text-muted-foreground" />
+            </div>
+          )}
+        </div>
+
+        {/* Content */}
+        <div className="flex-1 min-w-0">
+          <div className="flex items-start justify-between gap-2">
+            <div className="flex-1 min-w-0">
+              <p className="text-sm">
+                <span className={cn(isUnread ? "font-semibold text-foreground" : "font-medium text-foreground/90")}>{notification.name}</span>{" "}
+                <span className={cn(isUnread ? "text-foreground/80" : "text-muted-foreground")}>{notification.description}</span>
+              </p>
+              <div className="flex items-center gap-2 mt-1">
+                <span className="text-xs text-muted-foreground">{notification.timestamp}</span>
+                {showPriority && notification.priority && (
+                  <Badge
+                    variant="outline"
+                    className={cn(
+                      "h-4 px-1.5 text-[10px] font-medium border-0",
+                      notification.priority === "high" && "bg-red-100 text-red-700 dark:bg-red-950/30 dark:text-red-400",
+                      notification.priority === "medium" && "bg-yellow-100 text-yellow-700 dark:bg-yellow-950/30 dark:text-yellow-400",
+                      notification.priority === "low" && "bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400"
+                    )}
+                  >
+                    {notification.priority === "high" ? "NEED HIGH ATTENTION" : notification.priority === "medium" ? "MODERATE PRIORITY" : "LOW"}
+                  </Badge>
+                )}
+              </div>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex-shrink-0">
+              {showPinButton && isPinned ? (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={handleUnpin}
+                  className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none group-hover:pointer-events-auto"
+                  title="Unpin"
                 >
-                  {notification.priority === "high" ? "NEED HIGH ATTENTION" : notification.priority === "medium" ? "MODERATE PRIORITY" : "LOW"}
-                </Badge>
+                  <PinOff className="h-4 w-4 text-muted-foreground" />
+                </Button>
+              ) : (
+                <>
+                  {isUnread ? (
+                    <div className="flex gap-1">
+                      {showPinButton && (
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={handlePin}
+                          className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none group-hover:pointer-events-auto"
+                          title="Pin"
+                        >
+                          <Pin className="h-4 w-4 text-muted-foreground" />
+                        </Button>
+                      )}
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={handleMarkAsRead}
+                        className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none group-hover:pointer-events-auto"
+                        title="Mark as read"
+                      >
+                        <Circle className="h-4 w-4 text-muted-foreground" />
+                      </Button>
+                    </div>
+                  ) : (
+                    <div className="flex gap-1">
+                      {showPinButton && (
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={handlePin}
+                          className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none group-hover:pointer-events-auto"
+                          title="Pin"
+                        >
+                          <Pin className="h-4 w-4 text-muted-foreground" />
+                        </Button>
+                      )}
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={handleMarkAsUnread}
+                        className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none group-hover:pointer-events-auto"
+                        title="Mark as unread"
+                      >
+                        <CheckCircle2 className="h-4 w-4 text-muted-foreground" />
+                      </Button>
+                    </div>
+                  )}
+                </>
               )}
             </div>
-          </div>
-
-          {/* Action Buttons */}
-          <div className="flex-shrink-0">
-            {showPinButton && isPinned ? (
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={handleUnpin}
-                className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none group-hover:pointer-events-auto"
-                title="Unpin"
-              >
-                <PinOff className="h-4 w-4 text-muted-foreground" />
-              </Button>
-            ) : (
-              <>
-                {isUnread ? (
-                  <div className="flex gap-1">
-                    {showPinButton && (
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={handlePin}
-                        className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none group-hover:pointer-events-auto"
-                        title="Pin"
-                      >
-                        <Pin className="h-4 w-4 text-muted-foreground" />
-                      </Button>
-                    )}
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={handleMarkAsRead}
-                      className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none group-hover:pointer-events-auto"
-                      title="Mark as read"
-                    >
-                      <Circle className="h-4 w-4 text-muted-foreground" />
-                    </Button>
-                  </div>
-                ) : (
-                  <div className="flex gap-1">
-                    {showPinButton && (
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={handlePin}
-                        className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none group-hover:pointer-events-auto"
-                        title="Pin"
-                      >
-                        <Pin className="h-4 w-4 text-muted-foreground" />
-                      </Button>
-                    )}
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={handleMarkAsUnread}
-                      className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none group-hover:pointer-events-auto"
-                      title="Mark as unread"
-                    >
-                      <CheckCircle2 className="h-4 w-4 text-muted-foreground" />
-                    </Button>
-                  </div>
-                )}
-              </>
-            )}
           </div>
         </div>
       </div>
