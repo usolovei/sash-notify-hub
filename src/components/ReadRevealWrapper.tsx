@@ -1,13 +1,19 @@
-import { useEffect, useRef, useState, ReactNode } from "react";
+import { ReactNode } from "react";
 import { Check } from "lucide-react";
 
 // Spark-style timings:
 // 1) Cards slide LEFT → RIGHT over SLIDE_MS (ease-out)
 // 2) Hold the revealed blue block for HOLD_MS so the user registers it
-// 3) Collapse the whole block's height to 0 over COLLAPSE_MS
+//
+// We intentionally do NOT collapse the wrapper's height anymore. When the
+// pending items are committed to "read" by the parent, they unmount and
+// the next pending unread item slides up into the freed slot via the
+// parent's "buffer" logic (see NotificationGroup). This keeps the list
+// height stable while the user rapidly marks items as read, avoiding
+// the flicker / shift-up that height collapse caused.
 const SLIDE_MS = 160;
 const HOLD_MS = 40;
-const COLLAPSE_MS = 90;
+const COLLAPSE_MS = 0;
 
 interface ReadRevealWrapperProps {
   children: ReactNode;
@@ -17,39 +23,13 @@ interface ReadRevealWrapperProps {
  * Wraps one or more contiguous notification cards that are transitioning
  * from unread → read. Renders a single solid blue rectangle behind them
  * with a checkmark + "Read" label in the upper-left. The cards inside
- * slide off to the right, then the whole wrapper collapses its height.
- *
- * The cards themselves handle the right-slide transform (see NotificationItem).
- * This wrapper owns the blue reveal layer and the height collapse.
+ * slide off to the right, exposing the blue block. After the parent
+ * commits the read state, the wrapper unmounts and the slot is taken
+ * by the next item in the list (no height animation).
  */
 export const ReadRevealWrapper = ({ children }: ReadRevealWrapperProps) => {
-  const ref = useRef<HTMLDivElement>(null);
-  const [phase, setPhase] = useState<"slide" | "collapse">("slide");
-  const [height, setHeight] = useState<number | null>(null);
-
-  useEffect(() => {
-    // Capture initial rendered height so we can animate it down to 0 later.
-    if (ref.current) {
-      setHeight(ref.current.offsetHeight);
-    }
-
-    // After the slide finishes + a short hold, begin collapsing.
-    // We must have committed the explicit pixel height first, so the browser
-    // has a concrete starting value to transition from when we set it to 0.
-    const t = window.setTimeout(() => setPhase("collapse"), SLIDE_MS + HOLD_MS);
-    return () => window.clearTimeout(t);
-  }, []);
-
-  // While "slide": use the captured pixel height (or auto for the very first
-  // paint before the measurement lands). While "collapse": animate to 0.
-  const wrapperStyle: React.CSSProperties = {
-    height: phase === "collapse" ? 0 : height ?? undefined,
-    overflow: "hidden",
-    transition: `height ${COLLAPSE_MS}ms ease-out`,
-  };
-
   return (
-    <div ref={ref} style={wrapperStyle} className="relative">
+    <div className="relative">
       {/* Solid blue reveal layer behind the cards. Spans the full wrapper. */}
       <div
         aria-hidden
