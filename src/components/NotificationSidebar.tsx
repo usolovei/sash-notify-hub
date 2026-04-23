@@ -21,6 +21,7 @@ import { Badge } from "@/components/ui/badge";
 import { Notification } from "@/data/notifications";
 import { NotificationGroup } from "./NotificationGroup";
 import { NotificationItem } from "./NotificationItem";
+import { ReadRevealWrapper } from "./ReadRevealWrapper";
 import { NotificationSettings } from "./NotificationSettings";
 import { UndoTimer } from "./UndoTimer";
 
