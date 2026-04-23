@@ -78,7 +78,7 @@ export const NotificationItem = ({
     <div
       className={cn(
         "px-4 py-3 flex items-start gap-3 relative group cursor-pointer",
-        "transition-colors duration-300 ease-out",
+        "transition-colors duration-500 ease-out",
         isUnread ? "bg-notification-unread" : "bg-background hover:bg-muted/30"
       )}
       onMouseEnter={() => setIsHovered(true)}
@@ -89,7 +89,7 @@ export const NotificationItem = ({
       <div
         className={cn(
           "absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-notification-indicator rounded-r",
-          "transition-opacity duration-300 ease-out",
+          "transition-opacity duration-500 ease-out",
           isUnread ? "opacity-100" : "opacity-0"
         )}
       />
