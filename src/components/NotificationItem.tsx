@@ -77,17 +77,22 @@ export const NotificationItem = ({
   return (
     <div
       className={cn(
-        "px-4 py-3 flex items-start gap-3 transition-all relative group cursor-pointer",
+        "px-4 py-3 flex items-start gap-3 relative group cursor-pointer",
+        "transition-colors duration-300 ease-out",
         isUnread ? "bg-notification-unread" : "bg-background hover:bg-muted/30"
       )}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       onClick={handleClick}
     >
-      {/* Unread Indicator */}
-      {isUnread && (
-        <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-notification-indicator rounded-r" />
-      )}
+      {/* Unread Indicator - always rendered, fades via opacity for smooth transition */}
+      <div
+        className={cn(
+          "absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-notification-indicator rounded-r",
+          "transition-opacity duration-300 ease-out",
+          isUnread ? "opacity-100" : "opacity-0"
+        )}
+      />
 
       {/* Avatar with Module Icon */}
       <div className="relative flex-shrink-0">
@@ -107,9 +112,9 @@ export const NotificationItem = ({
       <div className="flex-1 min-w-0">
         <div className="flex items-start justify-between gap-2">
           <div className="flex-1 min-w-0">
-            <p className="text-sm">
-              <span className="font-medium">{notification.name}</span>{" "}
-              <span className="text-muted-foreground">{notification.description}</span>
+            <p className="text-sm transition-colors duration-300 ease-out">
+              <span className={cn("transition-all duration-300 ease-out", isUnread ? "font-semibold text-foreground" : "font-medium text-foreground/90")}>{notification.name}</span>{" "}
+              <span className={cn("transition-colors duration-300 ease-out", isUnread ? "text-foreground/80" : "text-muted-foreground")}>{notification.description}</span>
             </p>
             <div className="flex items-center gap-2 mt-1">
               <span className="text-xs text-muted-foreground">{notification.timestamp}</span>
