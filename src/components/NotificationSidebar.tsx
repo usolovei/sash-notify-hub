@@ -332,7 +332,7 @@ export const NotificationSidebar = ({
                 )}
               </div>
             </div>
-            <div className="divide-y">
+            <div className="divide-y flex-1 flex flex-col">
             {plainViewNotifications.map((notification) => (
                 <NotificationItem
                   key={notification.id}
@@ -348,7 +348,7 @@ export const NotificationSidebar = ({
                 />
               ))}
               {plainViewNotifications.length === 0 && (
-                <div className="flex flex-col items-center justify-center p-12 text-center">
+                <div className="flex-1 flex flex-col items-center justify-center p-8 text-center">
                   <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-4">
                     <CheckCircle2 className="h-8 w-8 text-primary" />
                   </div>
