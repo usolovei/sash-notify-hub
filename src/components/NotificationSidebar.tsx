@@ -34,6 +34,7 @@ interface NotificationSidebarProps {
   isOpen: boolean;
   onClose: () => void;
   notifications: Notification[];
+  pendingReadIds: Set<number>;
   onMarkAsRead: (id: number) => void;
   onMarkAsUnread: (id: number) => void;
   onMarkGroupAsRead: (group: string, ids: number[]) => void;
@@ -54,6 +55,7 @@ export const NotificationSidebar = ({
   isOpen,
   onClose,
   notifications,
+  pendingReadIds,
   onMarkAsRead,
   onMarkAsUnread,
   onMarkGroupAsRead,
@@ -346,6 +348,7 @@ export const NotificationSidebar = ({
                   isPinned={notification.pinned || false}
                   showPinButton={false}
                   showPriority={showPriorities}
+                  isPendingRead={pendingReadIds.has(notification.id)}
                 />
               ))}
               {plainViewNotifications.length === 0 && (
@@ -378,6 +381,7 @@ export const NotificationSidebar = ({
                   onPin={onPin}
                   onUnpin={onUnpin}
                   showPriority={showPriorities}
+                  pendingReadIds={pendingReadIds}
                 />
               )}
 
@@ -401,6 +405,7 @@ export const NotificationSidebar = ({
                     onPin={onPin}
                     onUnpin={onUnpin}
                     showPriority={showPriorities}
+                    pendingReadIds={pendingReadIds}
                   />
                 );
               })}
@@ -420,6 +425,7 @@ export const NotificationSidebar = ({
                   onUnpin={onUnpin}
                   showPriority={showPriorities}
                   initialVisible={unreadCount === 0 ? 20 : 3}
+                  pendingReadIds={pendingReadIds}
                 />
               )}
 

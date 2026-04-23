@@ -1,4 +1,4 @@
-import { useState, useMemo, useRef } from "react";
+import { useState, useMemo, useRef, useCallback } from "react";
 import { AppHeader } from "@/components/AppHeader";
 import { NotificationSidebar } from "@/components/NotificationSidebar";
 import { NotificationDetail } from "@/components/NotificationDetail";
@@ -10,9 +10,14 @@ interface LastOperation {
   timestamp: number;
 }
 
+// Duration of the read-transition (must match CSS transitions in NotificationItem)
+const READ_TRANSITION_MS = 500;
+const STAGGER_MS = 90;
+
 const Index = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [notifications, setNotifications] = useState<Notification[]>(notificationsData);
+  const [pendingReadIds, setPendingReadIds] = useState<Set<number>>(new Set());
   const [selectedNotification, setSelectedNotification] = useState<Notification | null>(null);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [lastOperation, setLastOperation] = useState<LastOperation | null>(null);
@@ -70,7 +75,7 @@ const Index = () => {
       timerRef.current = null;
     }
 
-    // Restore original status
+    // Restore original status and clear any pending read transition
     setNotifications((prev) =>
       prev.map((notification) =>
         lastOperation.ids.includes(notification.id)
@@ -78,24 +83,40 @@ const Index = () => {
           : notification
       )
     );
+    setPendingReadIds((prev) => {
+      const next = new Set(prev);
+      lastOperation.ids.forEach((id) => next.delete(id));
+      return next;
+    });
 
     setLastOperation(null);
   };
 
-  const handleMarkAsRead = (id: number) => {
-    const notification = notifications.find(n => n.id === id);
-    const originalStatus = notification?.status || 'unread';
-
-    // Immediately mark as read
+  const commitRead = useCallback((ids: number[]) => {
     setNotifications((prev) =>
-      prev.map((notification) =>
-        notification.id === id
-          ? { ...notification, status: "read" as const }
-          : notification
+      prev.map((n) =>
+        ids.includes(n.id) ? { ...n, status: "read" as const } : n
       )
     );
+    setPendingReadIds((prev) => {
+      const next = new Set(prev);
+      ids.forEach((id) => next.delete(id));
+      return next;
+    });
+  }, []);
 
-    startUndoTimer([id], originalStatus);
+  const handleMarkAsRead = (id: number) => {
+    const notification = notifications.find((n) => n.id === id);
+    if (!notification || notification.status === "read") return;
+
+    // Visually mark as read immediately (transition starts), but keep status
+    // as "unread" so the item stays in its current group during the animation.
+    setPendingReadIds((prev) => new Set(prev).add(id));
+
+    // Commit the actual status change after the transition completes.
+    setTimeout(() => commitRead([id]), READ_TRANSITION_MS);
+
+    startUndoTimer([id], "unread");
   };
 
   const handleMarkAsUnread = (id: number) => {
@@ -109,37 +130,31 @@ const Index = () => {
   };
 
   const handleMarkGroupAsRead = (group: string, ids: number[]) => {
-    // Stagger the read transitions for a gentle ripple effect (140ms apart)
+    if (ids.length === 0) return;
+
+    // Stagger the visual "read" transition top-to-bottom; commit each item's
+    // real status only after its own transition has finished so items remain
+    // visible in their current group during the cascade.
     ids.forEach((id, index) => {
+      const startDelay = index * STAGGER_MS;
       setTimeout(() => {
-        setNotifications((prev) =>
-          prev.map((notification) =>
-            notification.id === id
-              ? { ...notification, status: "read" as const }
-              : notification
-          )
-        );
-      }, index * 140);
+        setPendingReadIds((prev) => new Set(prev).add(id));
+      }, startDelay);
+      setTimeout(() => commitRead([id]), startDelay + READ_TRANSITION_MS);
     });
 
-    startUndoTimer(ids, 'unread');
+    startUndoTimer(ids, "unread");
   };
 
   const handleNotificationClick = (notification: Notification) => {
     setSelectedNotification(notification);
     setIsDetailOpen(true);
 
-    // Mark as read if unread
+    // Mark as read with the same in-place transition as the button.
     if (notification.status === "unread") {
-      setNotifications((prev) =>
-        prev.map((n) =>
-          n.id === notification.id
-            ? { ...n, status: "read" as const }
-            : n
-        )
-      );
-
-      startUndoTimer([notification.id], 'unread');
+      setPendingReadIds((prev) => new Set(prev).add(notification.id));
+      setTimeout(() => commitRead([notification.id]), READ_TRANSITION_MS);
+      startUndoTimer([notification.id], "unread");
     }
   };
 
@@ -210,6 +225,7 @@ const Index = () => {
         isOpen={isSidebarOpen}
         onClose={() => setIsSidebarOpen(false)}
         notifications={notifications}
+        pendingReadIds={pendingReadIds}
         onMarkAsRead={handleMarkAsRead}
         onMarkAsUnread={handleMarkAsUnread}
         onMarkGroupAsRead={handleMarkGroupAsRead}

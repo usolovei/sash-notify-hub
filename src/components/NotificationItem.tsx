@@ -16,6 +16,7 @@ interface NotificationItemProps {
   isPinned: boolean;
   showPinButton?: boolean;
   showPriority?: boolean;
+  isPendingRead?: boolean;
 }
 
 const moduleIcons = {
@@ -35,10 +36,12 @@ export const NotificationItem = ({
   isPinned,
   showPinButton = true,
   showPriority = true,
+  isPendingRead = false,
 }: NotificationItemProps) => {
   const [isHovered, setIsHovered] = useState(false);
-  
-  const isUnread = notification.status === "unread";
+
+  // Visual "read" state — true when actually read OR when transitioning to read.
+  const isUnread = notification.status === "unread" && !isPendingRead;
   const ModuleIcon = moduleIcons[notification.module];
 
   const handleMarkAsRead = (e: React.MouseEvent) => {
