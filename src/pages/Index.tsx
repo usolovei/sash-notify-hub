@@ -1,4 +1,4 @@
-import { useState, useMemo, useRef } from "react";
+import { useState, useMemo, useRef, useCallback } from "react";
 import { AppHeader } from "@/components/AppHeader";
 import { NotificationSidebar } from "@/components/NotificationSidebar";
 import { NotificationDetail } from "@/components/NotificationDetail";
@@ -10,9 +10,14 @@ interface LastOperation {
   timestamp: number;
 }
 
+// Duration of the read-transition (must match CSS transitions in NotificationItem)
+const READ_TRANSITION_MS = 500;
+const STAGGER_MS = 90;
+
 const Index = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [notifications, setNotifications] = useState<Notification[]>(notificationsData);
+  const [pendingReadIds, setPendingReadIds] = useState<Set<number>>(new Set());
   const [selectedNotification, setSelectedNotification] = useState<Notification | null>(null);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [lastOperation, setLastOperation] = useState<LastOperation | null>(null);
