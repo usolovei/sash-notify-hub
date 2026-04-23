@@ -421,9 +421,8 @@ export const NotificationSidebar = ({
                 />
               )}
 
-              {/* Empty state when all notifications are seen and hidden */}
-              {!showSeen && pinnedNotifications.length === 0 && 
-               Object.values(groupedNotifications).every(group => group.length === 0) && (
+              {/* Empty state */}
+              {isEmpty && (
                 <div className="flex-1 flex flex-col items-center justify-center p-8 text-center">
                   <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-4">
                     <CheckCircle2 className="h-8 w-8 text-primary" />
