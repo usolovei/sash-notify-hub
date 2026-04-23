@@ -76,7 +76,7 @@ export const ReadRevealWrapper = ({ children, backfill }: ReadRevealWrapperProps
         aria-hidden
         className="absolute inset-0 flex items-start"
         style={{
-          backgroundColor: "#93B4F6",
+          backgroundColor: "#BFDBFE",
           opacity: blueOpacity,
           transition: `opacity ${CROSSFADE_MS}ms ease-out`,
         }}
