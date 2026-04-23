@@ -348,6 +348,7 @@ export const NotificationSidebar = ({
                   isPinned={notification.pinned || false}
                   showPinButton={false}
                   showPriority={showPriorities}
+                  isPendingRead={pendingReadIds.has(notification.id)}
                 />
               ))}
               {plainViewNotifications.length === 0 && (
@@ -380,6 +381,7 @@ export const NotificationSidebar = ({
                   onPin={onPin}
                   onUnpin={onUnpin}
                   showPriority={showPriorities}
+                  pendingReadIds={pendingReadIds}
                 />
               )}
 
@@ -403,6 +405,7 @@ export const NotificationSidebar = ({
                     onPin={onPin}
                     onUnpin={onUnpin}
                     showPriority={showPriorities}
+                    pendingReadIds={pendingReadIds}
                   />
                 );
               })}
@@ -422,6 +425,7 @@ export const NotificationSidebar = ({
                   onUnpin={onUnpin}
                   showPriority={showPriorities}
                   initialVisible={unreadCount === 0 ? 20 : 3}
+                  pendingReadIds={pendingReadIds}
                 />
               )}
 
