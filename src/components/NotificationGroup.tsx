@@ -55,28 +55,17 @@ export const NotificationGroup = ({
 }: NotificationGroupProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
 
-  // While some of the top-N items are mid-slide (pendingRead), include
-  // additional items below so the visible slot count stays stable. When
-  // the pending items commit to "read" and unmount, the extras already
-  // mounted below take their place with no flicker / no height jump.
   const displayedNotifications = isExpanded
     ? notifications
-    : (() => {
-        const base = notifications.slice(0, initialVisible);
-        const pendingInBase = base.filter((n) => pendingReadIds?.has(n.id)).length;
-        if (pendingInBase === 0) return base;
-        return notifications.slice(0, initialVisible + pendingInBase);
-      })();
+    : notifications.slice(0, initialVisible);
 
   const handleMarkAsRead = () => {
-    // Get IDs to mark as read based on expanded state. Only consider the
-    // first `initialVisible` items (ignore the extras we mounted purely
-    // for slot-replacement during the slide).
+    // Get IDs to mark as read based on expanded state
     const notificationsToMark = isExpanded ? notifications : notifications.slice(0, initialVisible);
     const idsToMark = notificationsToMark
-      .filter(n => n.status === "unread" && !pendingReadIds?.has(n.id))
+      .filter(n => n.status === "unread")
       .map(n => n.id);
-
+    
     if (idsToMark.length > 0) {
       onMarkGroupAsRead(groupName, idsToMark);
     }
