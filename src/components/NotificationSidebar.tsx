@@ -301,7 +301,7 @@ export const NotificationSidebar = ({
         </div>
 
         {/* Notification Groups */}
-        <div className="flex-1 overflow-y-auto">
+        <div className="flex-1 overflow-y-auto flex flex-col">
         {showPlainView ? (
           /* Plain View - Flat list sorted by priority */
           <div>
