@@ -109,7 +109,7 @@ const Index = () => {
   };
 
   const handleMarkGroupAsRead = (group: string, ids: number[]) => {
-    // Stagger the read transitions for a gentle ripple effect (90ms apart)
+    // Stagger the read transitions for a gentle ripple effect (140ms apart)
     ids.forEach((id, index) => {
       setTimeout(() => {
         setNotifications((prev) =>
@@ -119,7 +119,7 @@ const Index = () => {
               : notification
           )
         );
-      }, index * 90);
+      }, index * 140);
     });
 
     startUndoTimer(ids, 'unread');
