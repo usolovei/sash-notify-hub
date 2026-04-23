@@ -75,7 +75,7 @@ const Index = () => {
       timerRef.current = null;
     }
 
-    // Restore original status
+    // Restore original status and clear any pending read transition
     setNotifications((prev) =>
       prev.map((notification) =>
         lastOperation.ids.includes(notification.id)
@@ -83,6 +83,11 @@ const Index = () => {
           : notification
       )
     );
+    setPendingReadIds((prev) => {
+      const next = new Set(prev);
+      lastOperation.ids.forEach((id) => next.delete(id));
+      return next;
+    });
 
     setLastOperation(null);
   };
