@@ -150,31 +150,73 @@ export const NotificationGroup = ({
       <div className="divide-y">
         {(() => {
           // Group contiguous pending-read items into a single ReadRevealWrapper
-          // so one blue "Read" rectangle spans behind them all.
+          // so one blue "Read" rectangle spans behind them all. When we have
+          // unread notifications below the currently displayed window, pull
+          // them up as "backfill" content — the wrapper crossfades the blue
+          // into those new cards so the panel height stays stable.
           const out: JSX.Element[] = [];
           let buffer: Notification[] = [];
+
+          // Pool of unread notifications that are NOT currently displayed
+          // (i.e. live below the visible window) and NOT pending themselves.
+          // We draw from this pool, in order, to backfill each pending block.
+          const displayedIds = new Set(displayedNotifications.map((n) => n.id));
+          const backfillPool: Notification[] = notifications.filter(
+            (n) =>
+              !displayedIds.has(n.id) &&
+              n.status === "unread" &&
+              !(pendingReadIds?.has(n.id) ?? false)
+          );
+          let backfillCursor = 0;
+
+          const renderItem = (
+            notification: Notification,
+            opts: { isPendingRead: boolean }
+          ) => (
+            <NotificationItem
+              key={notification.id}
+              notification={notification}
+              onMarkAsRead={onMarkAsRead}
+              onMarkAsUnread={onMarkAsUnread}
+              onNotificationClick={onNotificationClick}
+              onPin={onPin}
+              onUnpin={onUnpin}
+              isPinned={groupName === "Pinned"}
+              showPinButton={true}
+              showPriority={showPriority}
+              isPendingRead={opts.isPendingRead}
+            />
+          );
 
           const flushBuffer = () => {
             if (buffer.length === 0) return;
             const items = buffer;
             buffer = [];
+
+            // Pull up to one backfill item per pending item from the pool.
+            const backfillItems = backfillPool.slice(
+              backfillCursor,
+              backfillCursor + items.length
+            );
+            backfillCursor += backfillItems.length;
+
+            const backfillNode =
+              backfillItems.length > 0 ? (
+                <div className="divide-y">
+                  {backfillItems.map((n) =>
+                    renderItem(n, { isPendingRead: false })
+                  )}
+                </div>
+              ) : undefined;
+
             out.push(
-              <ReadRevealWrapper key={`reveal-${items[0].id}`}>
-                {items.map((notification) => (
-                  <NotificationItem
-                    key={notification.id}
-                    notification={notification}
-                    onMarkAsRead={onMarkAsRead}
-                    onMarkAsUnread={onMarkAsUnread}
-                    onNotificationClick={onNotificationClick}
-                    onPin={onPin}
-                    onUnpin={onUnpin}
-                    isPinned={groupName === "Pinned"}
-                    showPinButton={true}
-                    showPriority={showPriority}
-                    isPendingRead={true}
-                  />
-                ))}
+              <ReadRevealWrapper
+                key={`reveal-${items[0].id}`}
+                backfill={backfillNode}
+              >
+                {items.map((notification) =>
+                  renderItem(notification, { isPendingRead: true })
+                )}
               </ReadRevealWrapper>
             );
           };
@@ -185,21 +227,7 @@ export const NotificationGroup = ({
               buffer.push(notification);
             } else {
               flushBuffer();
-              out.push(
-                <NotificationItem
-                  key={notification.id}
-                  notification={notification}
-                  onMarkAsRead={onMarkAsRead}
-                  onMarkAsUnread={onMarkAsUnread}
-                  onNotificationClick={onNotificationClick}
-                  onPin={onPin}
-                  onUnpin={onUnpin}
-                  isPinned={groupName === "Pinned"}
-                  showPinButton={true}
-                  showPriority={showPriority}
-                  isPendingRead={false}
-                />
-              );
+              out.push(renderItem(notification, { isPendingRead: false }));
             }
           });
           flushBuffer();
