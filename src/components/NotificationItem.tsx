@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState } from "react";
 import { Circle, CheckCircle2, CheckSquare, Users, Headphones, Book, Pin, PinOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -26,9 +26,9 @@ const moduleIcons = {
   "Knowledge Base": Book,
 };
 
-// Spark-style animation timings (must roughly match Index.tsx commit delay).
+// Spark-style slide timing — cards slide LEFT → RIGHT.
+// Must match SLIDE_MS in ReadRevealWrapper.
 const SLIDE_MS = 300;
-const COLLAPSE_MS = 150;
 
 export const NotificationItem = ({
   notification,
@@ -43,31 +43,9 @@ export const NotificationItem = ({
   isPendingRead = false,
 }: NotificationItemProps) => {
   const [isHovered, setIsHovered] = useState(false);
-  const [isCollapsing, setIsCollapsing] = useState(false);
-  const [measuredHeight, setMeasuredHeight] = useState<number | null>(null);
-  const wrapperRef = useRef<HTMLDivElement>(null);
 
   const isUnread = notification.status === "unread" && !isPendingRead;
   const ModuleIcon = moduleIcons[notification.module];
-
-  // When the item enters a "pending read" state, sequence the slide → collapse.
-  useEffect(() => {
-    if (!isPendingRead) {
-      // Reset (e.g. after undo) so the item returns to normal layout.
-      setIsCollapsing(false);
-      setMeasuredHeight(null);
-      return;
-    }
-
-    // Capture current rendered height so we can animate it down to 0.
-    if (wrapperRef.current) {
-      setMeasuredHeight(wrapperRef.current.offsetHeight);
-    }
-
-    // Begin collapsing right after the slide finishes.
-    const t = window.setTimeout(() => setIsCollapsing(true), SLIDE_MS);
-    return () => window.clearTimeout(t);
-  }, [isPendingRead]);
 
   const handleMarkAsRead = (e: React.MouseEvent) => {
     e.stopPropagation();
