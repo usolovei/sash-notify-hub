@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { X, Search, CheckCircle2, Filter, AtSign, UserCheck, ListTodo, HelpCircle, CheckSquare2, Pin, Undo2, Inbox, Check } from "lucide-react";
+import { X, Search, CheckCircle2, Filter, AtSign, UserCheck, ListTodo, HelpCircle, CheckSquare2, Pin, Undo2, Inbox, Check, BellOff } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import {
@@ -176,9 +176,9 @@ export const NotificationSidebar = ({
 
       {/* Sidebar */}
       <div
-        className={`fixed top-0 right-0 w-[500px] bg-background border-l shadow-2xl z-50 flex flex-col transition-transform duration-300 ${
-          isEmpty ? "h-[65vh]" : "h-full"
-        } ${isOpen ? "translate-x-0" : "translate-x-full"}`}
+        className={`fixed top-4 right-4 w-[500px] bg-background border shadow-2xl z-50 flex flex-col transition-transform duration-300 rounded-2xl overflow-hidden ${
+          isEmpty ? "h-[65vh]" : "h-[calc(100vh-2rem)]"
+        } ${isOpen ? "translate-x-0" : "translate-x-[calc(100%+1rem)]"}`}
       >
         {/* Header */}
         <div className="border-b p-4 space-y-3">
@@ -349,12 +349,12 @@ export const NotificationSidebar = ({
               ))}
               {plainViewNotifications.length === 0 && (
                 <div className="flex-1 flex flex-col items-center justify-center p-8 text-center">
-                  <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-4">
-                    <CheckCircle2 className="h-8 w-8 text-primary" />
+                  <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center mb-4">
+                    <BellOff className="h-8 w-8 text-muted-foreground" />
                   </div>
-                  <h3 className="text-lg font-semibold mb-2">Hooray! You've got no unseen notifications.</h3>
+                  <h3 className="text-lg font-semibold mb-2">No new notifications</h3>
                   <p className="text-sm text-muted-foreground">
-                    You're all caught up. We'll notify you when something new arrives.
+                    We'll notify you when something new arrives.
                   </p>
                 </div>
               )}
@@ -424,12 +424,12 @@ export const NotificationSidebar = ({
               {/* Empty state */}
               {isEmpty && (
                 <div className="flex-1 flex flex-col items-center justify-center p-8 text-center">
-                  <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-4">
-                    <CheckCircle2 className="h-8 w-8 text-primary" />
+                  <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center mb-4">
+                    <BellOff className="h-8 w-8 text-muted-foreground" />
                   </div>
-                  <h3 className="text-lg font-semibold mb-2">Hooray! You've got no unseen notifications.</h3>
+                  <h3 className="text-lg font-semibold mb-2">No new notifications</h3>
                   <p className="text-sm text-muted-foreground">
-                    You're all caught up. We'll notify you when something new arrives.
+                    We'll notify you when something new arrives.
                   </p>
                 </div>
               )}
