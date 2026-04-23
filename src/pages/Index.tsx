@@ -225,6 +225,7 @@ const Index = () => {
         isOpen={isSidebarOpen}
         onClose={() => setIsSidebarOpen(false)}
         notifications={notifications}
+        pendingReadIds={pendingReadIds}
         onMarkAsRead={handleMarkAsRead}
         onMarkAsUnread={handleMarkAsUnread}
         onMarkGroupAsRead={handleMarkGroupAsRead}
