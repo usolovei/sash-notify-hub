@@ -304,7 +304,7 @@ export const NotificationSidebar = ({
         <div className="flex-1 overflow-y-auto flex flex-col">
         {showPlainView ? (
           /* Plain View - Flat list sorted by priority */
-          <div>
+          <div className="flex-1 flex flex-col">
             {/* Inbox Header */}
             <div className="px-4 py-3 bg-muted/30 border-b">
               <div className="flex items-center justify-between gap-2">
