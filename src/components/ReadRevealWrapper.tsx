@@ -34,10 +34,14 @@ export const ReadRevealWrapper = ({ children }: ReadRevealWrapperProps) => {
     }
 
     // After the slide finishes + a short hold, begin collapsing.
+    // We must have committed the explicit pixel height first, so the browser
+    // has a concrete starting value to transition from when we set it to 0.
     const t = window.setTimeout(() => setPhase("collapse"), SLIDE_MS + HOLD_MS);
     return () => window.clearTimeout(t);
   }, []);
 
+  // While "slide": use the captured pixel height (or auto for the very first
+  // paint before the measurement lands). While "collapse": animate to 0.
   const wrapperStyle: React.CSSProperties = {
     height: phase === "collapse" ? 0 : height ?? undefined,
     overflow: "hidden",
