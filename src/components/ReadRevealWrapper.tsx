@@ -6,7 +6,7 @@ import { Check } from "lucide-react";
 // 2) Hold the revealed blue block for HOLD_MS so the user registers it
 // 3) Collapse the whole block's height to 0 over COLLAPSE_MS
 const SLIDE_MS = 300;
-const HOLD_MS = 200;
+const HOLD_MS = 80;
 const COLLAPSE_MS = 150;
 
 interface ReadRevealWrapperProps {
@@ -54,7 +54,7 @@ export const ReadRevealWrapper = ({ children }: ReadRevealWrapperProps) => {
       <div
         aria-hidden
         className="absolute inset-0 flex items-start"
-        style={{ backgroundColor: "#3C83F6" }}
+        style={{ backgroundColor: "#93B4F6" }}
       >
         <div className="flex items-center gap-1.5 px-4 py-3 text-white">
           <Check className="h-4 w-4" strokeWidth={2.5} />

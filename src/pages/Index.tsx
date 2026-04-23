@@ -10,9 +10,9 @@ interface LastOperation {
   timestamp: number;
 }
 
-// Spark-style transition: slide (300ms) + hold (200ms) + collapse (150ms).
+// Spark-style transition: slide (300ms) + hold (80ms) + collapse (150ms).
 // Must match the timings in ReadRevealWrapper.tsx.
-const READ_TRANSITION_MS = 650;
+const READ_TRANSITION_MS = 530;
 const STAGGER_MS = 90;
 
 const Index = () => {
