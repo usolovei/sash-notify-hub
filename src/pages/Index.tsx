@@ -10,8 +10,9 @@ interface LastOperation {
   timestamp: number;
 }
 
-// Duration of the read-transition (must match CSS transitions in NotificationItem)
-const READ_TRANSITION_MS = 500;
+// Spark-style transition: slide (300ms) + collapse (150ms) = 450ms.
+// Must match the timings in NotificationItem.tsx.
+const READ_TRANSITION_MS = 450;
 const STAGGER_MS = 90;
 
 const Index = () => {
