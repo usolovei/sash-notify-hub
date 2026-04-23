@@ -109,14 +109,18 @@ const Index = () => {
   };
 
   const handleMarkGroupAsRead = (group: string, ids: number[]) => {
-    // Immediately mark all as read
-    setNotifications((prev) =>
-      prev.map((notification) =>
-        ids.includes(notification.id)
-          ? { ...notification, status: "read" as const }
-          : notification
-      )
-    );
+    // Stagger the read transitions for a gentle ripple effect (90ms apart)
+    ids.forEach((id, index) => {
+      setTimeout(() => {
+        setNotifications((prev) =>
+          prev.map((notification) =>
+            notification.id === id
+              ? { ...notification, status: "read" as const }
+              : notification
+          )
+        );
+      }, index * 90);
+    });
 
     startUndoTimer(ids, 'unread');
   };
