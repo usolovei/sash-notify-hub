@@ -162,7 +162,7 @@ export const NotificationItem = ({
         />
 
         {/* Avatar with Module Icon */}
-        <div className="relative flex-shrink-0">
+        <div className="relative z-10 flex-shrink-0">
           <Avatar className="h-9 w-9">
             <AvatarFallback className="bg-primary/10 text-primary text-xs font-medium">
               {getInitials(notification.name)}
@@ -176,7 +176,7 @@ export const NotificationItem = ({
         </div>
 
         {/* Content */}
-        <div className="flex-1 min-w-0">
+        <div className="relative z-10 flex-1 min-w-0">
           <div className="flex items-start justify-between gap-2">
             <div className="flex-1 min-w-0">
               <p className="text-sm">
