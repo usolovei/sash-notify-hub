@@ -133,16 +133,13 @@ const Index = () => {
   const handleMarkGroupAsRead = (group: string, ids: number[]) => {
     if (ids.length === 0) return;
 
-    // Stagger the visual "read" transition top-to-bottom; commit each item's
-    // real status only after its own transition has finished so items remain
-    // visible in their current group during the cascade.
-    ids.forEach((id, index) => {
-      const startDelay = index * STAGGER_MS;
-      setTimeout(() => {
-        setPendingReadIds((prev) => new Set(prev).add(id));
-      }, startDelay);
-      setTimeout(() => commitRead([id]), startDelay + READ_TRANSITION_MS);
+    // All cards start sliding simultaneously — one unified sweep, no stagger.
+    setPendingReadIds((prev) => {
+      const next = new Set(prev);
+      ids.forEach((id) => next.add(id));
+      return next;
     });
+    setTimeout(() => commitRead(ids), READ_TRANSITION_MS);
 
     startUndoTimer(ids, "unread");
   };
