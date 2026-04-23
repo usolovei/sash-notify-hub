@@ -34,6 +34,7 @@ interface NotificationSidebarProps {
   isOpen: boolean;
   onClose: () => void;
   notifications: Notification[];
+  pendingReadIds: Set<number>;
   onMarkAsRead: (id: number) => void;
   onMarkAsUnread: (id: number) => void;
   onMarkGroupAsRead: (group: string, ids: number[]) => void;
@@ -54,6 +55,7 @@ export const NotificationSidebar = ({
   isOpen,
   onClose,
   notifications,
+  pendingReadIds,
   onMarkAsRead,
   onMarkAsUnread,
   onMarkGroupAsRead,
