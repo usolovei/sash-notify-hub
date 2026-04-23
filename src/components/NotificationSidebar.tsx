@@ -1,5 +1,6 @@
 import { useState, useMemo } from "react";
-import { X, Search, CheckCircle2, Filter, AtSign, UserCheck, ListTodo, HelpCircle, CheckSquare2, Pin, Undo2, Inbox, Check, BellOff } from "lucide-react";
+import { X, Search, CheckCircle2, Filter, AtSign, UserCheck, ListTodo, HelpCircle, CheckSquare2, Pin, Undo2, Inbox, Check } from "lucide-react";
+import emptyBell from "@/assets/empty-bell.png";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import {
