@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { NotificationItem } from "./NotificationItem";
+import { ReadRevealWrapper } from "./ReadRevealWrapper";
 import { Notification } from "@/data/notifications";
 import { Check, AtSign, UserCheck, ListTodo, HelpCircle, CheckSquare2, Pin, Eye } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
@@ -147,21 +148,63 @@ export const NotificationGroup = ({
       </div>
 
       <div className="divide-y">
-        {displayedNotifications.map((notification) => (
-          <NotificationItem
-            key={notification.id}
-            notification={notification}
-            onMarkAsRead={onMarkAsRead}
-            onMarkAsUnread={onMarkAsUnread}
-            onNotificationClick={onNotificationClick}
-            onPin={onPin}
-            onUnpin={onUnpin}
-            isPinned={groupName === "Pinned"}
-            showPinButton={true}
-            showPriority={showPriority}
-            isPendingRead={pendingReadIds?.has(notification.id) ?? false}
-          />
-        ))}
+        {(() => {
+          // Group contiguous pending-read items into a single ReadRevealWrapper
+          // so one blue "Read" rectangle spans behind them all.
+          const out: JSX.Element[] = [];
+          let buffer: Notification[] = [];
+
+          const flushBuffer = () => {
+            if (buffer.length === 0) return;
+            const items = buffer;
+            buffer = [];
+            out.push(
+              <ReadRevealWrapper key={`reveal-${items[0].id}`}>
+                {items.map((notification) => (
+                  <NotificationItem
+                    key={notification.id}
+                    notification={notification}
+                    onMarkAsRead={onMarkAsRead}
+                    onMarkAsUnread={onMarkAsUnread}
+                    onNotificationClick={onNotificationClick}
+                    onPin={onPin}
+                    onUnpin={onUnpin}
+                    isPinned={groupName === "Pinned"}
+                    showPinButton={true}
+                    showPriority={showPriority}
+                    isPendingRead={true}
+                  />
+                ))}
+              </ReadRevealWrapper>
+            );
+          };
+
+          displayedNotifications.forEach((notification) => {
+            const pending = pendingReadIds?.has(notification.id) ?? false;
+            if (pending) {
+              buffer.push(notification);
+            } else {
+              flushBuffer();
+              out.push(
+                <NotificationItem
+                  key={notification.id}
+                  notification={notification}
+                  onMarkAsRead={onMarkAsRead}
+                  onMarkAsUnread={onMarkAsUnread}
+                  onNotificationClick={onNotificationClick}
+                  onPin={onPin}
+                  onUnpin={onUnpin}
+                  isPinned={groupName === "Pinned"}
+                  showPinButton={true}
+                  showPriority={showPriority}
+                  isPendingRead={false}
+                />
+              );
+            }
+          });
+          flushBuffer();
+          return out;
+        })()}
       </div>
 
       {notifications.length > initialVisible && (

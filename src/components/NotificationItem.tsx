@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState } from "react";
 import { Circle, CheckCircle2, CheckSquare, Users, Headphones, Book, Pin, PinOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -26,9 +26,9 @@ const moduleIcons = {
   "Knowledge Base": Book,
 };
 
-// Spark-style animation timings (must roughly match Index.tsx commit delay).
+// Spark-style slide timing — cards slide LEFT → RIGHT.
+// Must match SLIDE_MS in ReadRevealWrapper.
 const SLIDE_MS = 300;
-const COLLAPSE_MS = 150;
 
 export const NotificationItem = ({
   notification,
@@ -43,31 +43,9 @@ export const NotificationItem = ({
   isPendingRead = false,
 }: NotificationItemProps) => {
   const [isHovered, setIsHovered] = useState(false);
-  const [isCollapsing, setIsCollapsing] = useState(false);
-  const [measuredHeight, setMeasuredHeight] = useState<number | null>(null);
-  const wrapperRef = useRef<HTMLDivElement>(null);
 
   const isUnread = notification.status === "unread" && !isPendingRead;
   const ModuleIcon = moduleIcons[notification.module];
-
-  // When the item enters a "pending read" state, sequence the slide → collapse.
-  useEffect(() => {
-    if (!isPendingRead) {
-      // Reset (e.g. after undo) so the item returns to normal layout.
-      setIsCollapsing(false);
-      setMeasuredHeight(null);
-      return;
-    }
-
-    // Capture current rendered height so we can animate it down to 0.
-    if (wrapperRef.current) {
-      setMeasuredHeight(wrapperRef.current.offsetHeight);
-    }
-
-    // Begin collapsing right after the slide finishes.
-    const t = window.setTimeout(() => setIsCollapsing(true), SLIDE_MS);
-    return () => window.clearTimeout(t);
-  }, [isPendingRead]);
 
   const handleMarkAsRead = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -102,54 +80,31 @@ export const NotificationItem = ({
       .slice(0, 2);
   };
 
-  // Outer wrapper handles height collapse so siblings shift up smoothly.
-  const wrapperStyle: React.CSSProperties = isPendingRead
-    ? {
-        height: isCollapsing ? 0 : measuredHeight ?? undefined,
-        overflow: "hidden",
-        transition: `height ${COLLAPSE_MS}ms ease-out`,
-      }
-    : {};
-
   return (
-    <div ref={wrapperRef} style={wrapperStyle}>
+    <div
+      className={cn(
+        "px-4 py-3 flex items-start gap-3 relative group cursor-pointer",
+        "bg-background hover:bg-muted/30",
+        // Slide LEFT → RIGHT when transitioning to read, revealing the
+        // blue "Read" layer rendered behind by ReadRevealWrapper.
+        "transition-transform ease-out",
+        isPendingRead ? "translate-x-full" : "translate-x-0"
+      )}
+      style={{ transitionDuration: `${SLIDE_MS}ms` }}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      onClick={handleClick}
+    >
+      {/* Unread background tint — present while truly unread. */}
       <div
+        aria-hidden
         className={cn(
-          "px-4 py-3 flex items-start gap-3 relative group cursor-pointer",
-          "bg-background hover:bg-muted/30",
-          // Slide right→left when transitioning to read.
-          "transition-transform ease-out",
-          isPendingRead ? "-translate-x-full" : "translate-x-0"
+          "absolute inset-0 bg-notification-unread pointer-events-none",
+          "transition-opacity ease-out",
+          isUnread ? "opacity-100" : "opacity-0"
         )}
         style={{ transitionDuration: `${SLIDE_MS}ms` }}
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
-        onClick={handleClick}
-      >
-        {/* Unread background tint — present while truly unread. */}
-        <div
-          aria-hidden
-          className={cn(
-            "absolute inset-0 bg-notification-unread pointer-events-none",
-            "transition-opacity ease-out",
-            isUnread ? "opacity-100" : "opacity-0"
-          )}
-          style={{ transitionDuration: `${SLIDE_MS}ms` }}
-        />
-
-        {/* Spark-style blue wash that flashes during the slide. */}
-        <div
-          aria-hidden
-          className={cn(
-            "absolute inset-0 pointer-events-none",
-            "transition-opacity ease-out",
-            isPendingRead ? "opacity-100" : "opacity-0"
-          )}
-          style={{
-            backgroundColor: "hsl(var(--primary) / 0.12)",
-            transitionDuration: `${SLIDE_MS}ms`,
-          }}
-        />
+      />
 
         {/* Unread Indicator */}
         <div
@@ -264,7 +219,6 @@ export const NotificationItem = ({
                   )}
                 </>
               )}
-            </div>
           </div>
         </div>
       </div>
