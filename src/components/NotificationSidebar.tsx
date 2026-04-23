@@ -424,14 +424,14 @@ export const NotificationSidebar = ({
 
               {/* Empty state */}
               {isEmpty && (
-                <div className="flex-1 flex flex-col items-center justify-center p-8 text-center">
-                  <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center mb-4">
-                    <BellOff className="h-8 w-8 text-muted-foreground" />
+                <div className="flex-1 flex flex-row items-center justify-center gap-4 p-8 text-left">
+                  <img src={emptyBell} alt="" className="w-20 h-20 shrink-0" />
+                  <div>
+                    <h3 className="text-base font-normal text-foreground">You have no notifications</h3>
+                    <p className="text-sm text-muted-foreground mt-1">
+                      Your notifications will appear here.
+                    </p>
                   </div>
-                  <h3 className="text-lg font-semibold mb-2">No new notifications</h3>
-                  <p className="text-sm text-muted-foreground">
-                    We'll notify you when something new arrives.
-                  </p>
                 </div>
               )}
             </>
