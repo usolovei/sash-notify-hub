@@ -112,9 +112,9 @@ export const NotificationItem = ({
       <div className="flex-1 min-w-0">
         <div className="flex items-start justify-between gap-2">
           <div className="flex-1 min-w-0">
-            <p className="text-sm transition-colors duration-300 ease-out">
-              <span className={cn("transition-all duration-300 ease-out", isUnread ? "font-semibold text-foreground" : "font-medium text-foreground/90")}>{notification.name}</span>{" "}
-              <span className={cn("transition-colors duration-300 ease-out", isUnread ? "text-foreground/80" : "text-muted-foreground")}>{notification.description}</span>
+            <p className="text-sm transition-colors duration-500 ease-out">
+              <span className={cn("transition-all duration-500 ease-out", isUnread ? "font-semibold text-foreground" : "font-medium text-foreground/90")}>{notification.name}</span>{" "}
+              <span className={cn("transition-colors duration-500 ease-out", isUnread ? "text-foreground/80" : "text-muted-foreground")}>{notification.description}</span>
             </p>
             <div className="flex items-center gap-2 mt-1">
               <span className="text-xs text-muted-foreground">{notification.timestamp}</span>
