@@ -204,82 +204,99 @@ export const NotificationSidebar = ({
           </div>
 
           {/* Controls Row */}
-          <div className="flex items-center justify-between gap-3">
-            {/* Left: Search Bar - expands on focus to overlay module filter */}
-            <div className="relative flex-1 group">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground z-10" />
+          <div className="flex items-center gap-2">
+            {/* Search Bar - takes most of the width */}
+            <div className="relative flex-1 min-w-0">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
                 placeholder="Search..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-9 h-8 relative transition-all duration-200 focus:w-[calc(100%+148px)] focus:z-20 focus:shadow-md"
+                className="pl-9 h-8"
               />
             </div>
 
-            {/* Right: Filters */}
-            <div className="flex items-center gap-2">
-              <Select value={moduleFilter} onValueChange={setModuleFilter}>
-                <SelectTrigger className="w-[140px] h-8">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="All Modules">All Modules</SelectItem>
-                  <SelectItem value="Tasks">Tasks</SelectItem>
-                  <SelectItem value="CRM Requests">CRM Requests</SelectItem>
-                  <SelectItem value="Care Service">Care Service</SelectItem>
-                  <SelectItem value="Knowledge Base">Knowledge Base</SelectItem>
-                </SelectContent>
-              </Select>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button variant="ghost" size="icon" className="h-8 w-8">
-                    <Filter className="h-4 w-4" />
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-80" align="end">
-                  <div className="space-y-4">
-                    <div className="space-y-2">
-                      <Label className="text-sm font-medium">Date</Label>
-                      <Select value={dateFilter} onValueChange={setDateFilter}>
-                        <SelectTrigger>
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="All Time">All Time</SelectItem>
-                          <SelectItem value="Today">Today</SelectItem>
-                          <SelectItem value="This Week">This Week</SelectItem>
-                          <SelectItem value="This Month">This Month</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div className="space-y-2">
-                      <Label className="text-sm font-medium">Priority</Label>
-                      <Select value={priorityFilter} onValueChange={setPriorityFilter}>
-                        <SelectTrigger>
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="All Priorities">All Priorities</SelectItem>
-                          <SelectItem value="Need high attention">Need high attention</SelectItem>
-                          <SelectItem value="Moderate priority">Moderate priority</SelectItem>
-                          <SelectItem value="Low">Low</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </div>
-                </PopoverContent>
-              </Popover>
-              <div className="flex items-center gap-2 pl-2 border-l">
-                <Label htmlFor="show-seen" className="text-xs cursor-pointer whitespace-nowrap">
-                  Show seen
-                </Label>
-                <Switch
-                  id="show-seen"
-                  checked={showSeen}
-                  onCheckedChange={onShowSeenChange}
-                />
-              </div>
+            {/* Segmented control: All / Unread */}
+            <div className="inline-flex items-center rounded-full bg-muted p-0.5 h-8 shrink-0">
+              <button
+                type="button"
+                onClick={() => onShowSeenChange(true)}
+                className={`px-3 h-7 rounded-full text-xs font-medium transition-colors ${
+                  showSeen
+                    ? "bg-background text-foreground shadow-sm"
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                All
+              </button>
+              <button
+                type="button"
+                onClick={() => onShowSeenChange(false)}
+                className={`px-3 h-7 rounded-full text-xs font-medium transition-colors ${
+                  !showSeen
+                    ? "bg-background text-foreground shadow-sm"
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                Unread ({unreadCount})
+              </button>
             </div>
+
+            {/* Filter dropdown with Applications + Date + Priority */}
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button variant="ghost" size="icon" className="h-8 w-8 shrink-0">
+                  <Filter className="h-4 w-4" />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-80" align="end">
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <Label className="text-sm font-medium">Applications</Label>
+                    <Select value={moduleFilter} onValueChange={setModuleFilter}>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="All Modules">All Modules</SelectItem>
+                        <SelectItem value="Tasks">Tasks</SelectItem>
+                        <SelectItem value="CRM Requests">CRM Requests</SelectItem>
+                        <SelectItem value="Care Service">Care Service</SelectItem>
+                        <SelectItem value="Knowledge Base">Knowledge Base</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-sm font-medium">Date</Label>
+                    <Select value={dateFilter} onValueChange={setDateFilter}>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="All Time">All Time</SelectItem>
+                        <SelectItem value="Today">Today</SelectItem>
+                        <SelectItem value="This Week">This Week</SelectItem>
+                        <SelectItem value="This Month">This Month</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-sm font-medium">Priority</Label>
+                    <Select value={priorityFilter} onValueChange={setPriorityFilter}>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="All Priorities">All Priorities</SelectItem>
+                        <SelectItem value="Need high attention">Need high attention</SelectItem>
+                        <SelectItem value="Moderate priority">Moderate priority</SelectItem>
+                        <SelectItem value="Low">Low</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+              </PopoverContent>
+            </Popover>
           </div>
         </div>
 
