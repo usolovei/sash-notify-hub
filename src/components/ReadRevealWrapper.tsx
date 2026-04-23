@@ -5,9 +5,9 @@ import { Check } from "lucide-react";
 // 1) Cards slide LEFT → RIGHT over SLIDE_MS (ease-out)
 // 2) Hold the revealed blue block for HOLD_MS so the user registers it
 // 3) Collapse the whole block's height to 0 over COLLAPSE_MS
-const SLIDE_MS = 300;
-const HOLD_MS = 80;
-const COLLAPSE_MS = 150;
+const SLIDE_MS = 160;
+const HOLD_MS = 40;
+const COLLAPSE_MS = 90;
 
 interface ReadRevealWrapperProps {
   children: ReactNode;
