@@ -70,7 +70,7 @@ export const NotificationGroup = ({
 
   const handleMarkAllAsUnread = () => {
     // Mark all seen notifications as unread
-    const notificationsToMark = isExpanded ? notifications : notifications.slice(0, 3);
+    const notificationsToMark = isExpanded ? notifications : notifications.slice(0, initialVisible);
     
     notificationsToMark.forEach((notification) => {
       if (notification.status === "read") {
