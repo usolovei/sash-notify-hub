@@ -424,12 +424,12 @@ export const NotificationSidebar = ({
               {/* Empty state */}
               {isEmpty && (
                 <div className="flex-1 flex flex-col items-center justify-center p-8 text-center">
-                  <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-4">
-                    <CheckCircle2 className="h-8 w-8 text-primary" />
+                  <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center mb-4">
+                    <BellOff className="h-8 w-8 text-muted-foreground" />
                   </div>
-                  <h3 className="text-lg font-semibold mb-2">Hooray! You've got no unseen notifications.</h3>
+                  <h3 className="text-lg font-semibold mb-2">No new notifications</h3>
                   <p className="text-sm text-muted-foreground">
-                    You're all caught up. We'll notify you when something new arrives.
+                    We'll notify you when something new arrives.
                   </p>
                 </div>
               )}
