@@ -472,9 +472,9 @@ export const NotificationSidebar = ({
                 />
               )}
 
-              {/* Empty state */}
+              {/* Empty state — vertically centered to the viewport, not the container */}
               {isEmpty && (
-                <div className="flex-1 flex flex-row items-center justify-center gap-5 p-8 text-left">
+                <div className="fixed top-1/2 -translate-y-1/2 right-4 w-[500px] flex flex-row items-center justify-center gap-5 p-8 text-left pointer-events-none">
                   <img src={emptyBell} alt="" className="w-32 h-32 shrink-0" />
                   <div>
                     <h3 className="text-2xl font-normal text-foreground">You have no notifications</h3>
