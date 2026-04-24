@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, ReactNode } from "react";
-import { Check } from "lucide-react";
+
 
 // Spark-style timings:
 // 1) Cards slide LEFT → RIGHT over SLIDE_MS (ease-out)
@@ -74,18 +74,13 @@ export const ReadRevealWrapper = ({ children, backfill }: ReadRevealWrapperProps
       {/* Solid blue reveal layer behind the cards. Spans the full wrapper. */}
       <div
         aria-hidden
-        className="absolute inset-0 flex items-start"
+        className="absolute inset-0"
         style={{
-          backgroundColor: "#BFDBFE",
+          backgroundColor: "#3381E5",
           opacity: blueOpacity,
           transition: `opacity ${CROSSFADE_MS}ms ease-out`,
         }}
-      >
-        <div className="flex items-center gap-1.5 px-4 py-3 text-white">
-          <Check className="h-4 w-4" strokeWidth={2.5} />
-          <span className="text-sm font-medium">Read</span>
-        </div>
-      </div>
+      />
 
       {/* Backfill layer: replacement notifications fading in over the blue. */}
       {hasBackfill && (
