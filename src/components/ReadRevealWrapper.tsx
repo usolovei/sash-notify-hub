@@ -83,7 +83,7 @@ export const ReadRevealWrapper = ({ children, backfill }: ReadRevealWrapperProps
       >
         <div className="flex items-center gap-2 px-4 text-white">
           <Check className="h-6 w-6" strokeWidth={2.5} />
-          <span className="text-[24px] font-bold leading-none">Read</span>
+          <span className="text-[14px] font-bold leading-none">Read</span>
         </div>
       </div>
 
