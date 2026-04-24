@@ -242,7 +242,7 @@ export const NotificationSidebar = ({
                     : "text-muted-foreground hover:text-foreground"
                 }`}
               >
-                Unread ({unreadCount})
+                Unread
               </button>
             </div>
 
