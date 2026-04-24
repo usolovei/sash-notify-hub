@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, ReactNode } from "react";
-import { Check } from "lucide-react";
+
 
 // Spark-style timings:
 // 1) Cards slide LEFT → RIGHT over SLIDE_MS (ease-out)
