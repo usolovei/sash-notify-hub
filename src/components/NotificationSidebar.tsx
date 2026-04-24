@@ -180,14 +180,9 @@ export const NotificationSidebar = ({
 
       {/* Sidebar */}
       <div
-        className={`fixed top-4 right-4 w-[500px] bg-background border shadow-2xl z-50 flex flex-col rounded-2xl overflow-hidden ${
-          isEmpty ? "h-[65vh]" : "h-[calc(100vh-2rem)]"
-        } ${isOpen ? "translate-x-0" : "translate-x-[calc(100%+1rem)]"}`}
-        style={{
-          transition:
-            "height 320ms cubic-bezier(0.32, 0.72, 0, 1), transform 300ms cubic-bezier(0.32, 0.72, 0, 1)",
-          willChange: "height, transform",
-        }}
+        className={`fixed top-4 right-4 w-[500px] h-[calc(100vh-2rem)] bg-background border shadow-2xl z-50 flex flex-col transition-transform duration-300 rounded-2xl overflow-hidden ${
+          isOpen ? "translate-x-0" : "translate-x-[calc(100%+1rem)]"
+        }`}
       >
         {/* Header */}
         <div className="border-b p-4 space-y-3">
